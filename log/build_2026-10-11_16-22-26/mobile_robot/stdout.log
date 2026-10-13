@@ -1,0 +1,24 @@
+-- Install configuration: ""
+-- Execute custom install script
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/config/empty.yaml
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/description/inertial_macros.xacro
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/description/robot.urdf.xacro
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/description/robot_core.xacro
+-- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/launch/launch_sim.launch.py
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/launch/rsp.launch.py
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/worlds/empty.world
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/ament_index/resource_index/package_run_dependencies/mobile_robot
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/ament_index/resource_index/parent_prefix_path/mobile_robot
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/environment/ament_prefix_path.sh
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/environment/ament_prefix_path.dsv
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/environment/path.sh
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/environment/path.dsv
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/local_setup.bash
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/local_setup.sh
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/local_setup.zsh
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/local_setup.dsv
+-- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/package.dsv
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/ament_index/resource_index/packages/mobile_robot
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/cmake/mobile_robotConfig.cmake
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/cmake/mobile_robotConfig-version.cmake
+-- Up-to-date symlink: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/package.xml

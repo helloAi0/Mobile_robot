@@ -1,0 +1,61 @@
+[0.011s] Invoking command in '/home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/user_taha5253/dev_ws/src/mobile_robot -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot
+[0.182s] -- The C compiler identification is GNU 13.3.0
+[0.623s] -- The CXX compiler identification is GNU 13.3.0
+[0.969s] -- Detecting C compiler ABI info
+[1.144s] -- Detecting C compiler ABI info - done
+[1.147s] -- Check for working C compiler: /usr/bin/cc - skipped
+[1.148s] -- Detecting C compile features
+[1.149s] -- Detecting C compile features - done
+[1.219s] -- Detecting CXX compiler ABI info
+[1.405s] -- Detecting CXX compiler ABI info - done
+[1.409s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.409s] -- Detecting CXX compile features
+[1.409s] -- Detecting CXX compile features - done
+[1.418s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.504s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.551s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.593s] -- Found ament_lint_auto: 0.17.5 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[1.669s] -- Added test 'copyright' to check source files copyright and LICENSE
+[1.675s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[1.676s] -- Configured cppcheck include dirs: 
+[1.676s] -- Configured cppcheck exclude dirs and/or files: 
+[1.679s] -- Added test 'cpplint' to check C / C++ code against the Google style
+[1.679s] -- Configured cpplint exclude dirs and/or files: 
+[1.680s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.680s] -- Configured 'flake8' exclude dirs and/or files: 
+[1.681s] -- Added test 'lint_cmake' to check CMake code style
+[1.682s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.684s] -- Added test 'uncrustify' to check C / C++ code style
+[1.684s] -- Configured uncrustify additional arguments: 
+[1.685s] -- Added test 'xmllint' to check XML markup files
+[1.687s] -- Configuring done (1.6s)
+[1.689s] -- Generating done (0.0s)
+[1.690s] -- Build files have been written to: /home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot
+[1.694s] Invoked command in '/home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/user_taha5253/dev_ws/src/mobile_robot -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot
+[1.695s] Invoking command in '/home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot -- -j20 -l20
+[1.719s] Invoked command in '/home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot -- -j20 -l20
+[1.725s] Invoking command in '/home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot
+[1.730s] -- Install configuration: ""
+[1.730s] -- Execute custom install script
+[1.731s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/config/empty.yaml
+[1.736s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/description/inertial_macros.xacro
+[1.741s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/description/robot.urdf.xacro
+[1.746s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/description/robot_core.xacro
+[1.751s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/launch/rsp.launch.py
+[1.756s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/worlds/empty.world
+[1.761s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/ament_index/resource_index/package_run_dependencies/mobile_robot
+[1.766s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/ament_index/resource_index/parent_prefix_path/mobile_robot
+[1.771s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/environment/ament_prefix_path.sh
+[1.776s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/environment/ament_prefix_path.dsv
+[1.781s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/environment/path.sh
+[1.786s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/environment/path.dsv
+[1.791s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/local_setup.bash
+[1.796s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/local_setup.sh
+[1.800s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/local_setup.zsh
+[1.805s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/local_setup.dsv
+[1.811s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/package.dsv
+[1.816s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/ament_index/resource_index/packages/mobile_robot
+[1.821s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/cmake/mobile_robotConfig.cmake
+[1.826s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/cmake/mobile_robotConfig-version.cmake
+[1.831s] -- Symlinking: /home/user_taha5253/dev_ws/src/mobile_robot/install/mobile_robot/share/mobile_robot/package.xml
+[1.837s] Invoked command in '/home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot
