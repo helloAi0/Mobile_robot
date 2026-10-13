@@ -24,10 +24,13 @@ def generate_launch_description():
         get_package_share_directory(package_name), 'worlds', 'camera_world.sdf')
 
     # Include the Gazebo Sim (Harmonic) launch file
+    gui_config = os.path.join(
+        get_package_share_directory(package_name), 'config', 'gui.config')
+
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')]),
-        launch_arguments={'gz_args': f'-r {world_path}'}.items()
+        launch_arguments={'gz_args': f'-r {world_path} --gui-config {gui_config}'}.items()
     )
 
     # Bridge the Gazebo clock to ROS 2

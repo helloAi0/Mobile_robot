@@ -54,3 +54,11 @@ rviz2                                    # Add -> By topic -> /camera/image_raw 
 Quick checks if there is no image: `gz topic -l | grep camera` (should list `/camera/image_raw`)
 and `ros2 topic list | grep camera`. If Gazebo crashes or the image is black on a machine without
 a GPU (VM / WSL), change `ogre2` to `ogre` in the Sensors plugin of `worlds/camera_world.sdf`.
+
+
+## Moving the view (mouse)
+
+- **Gazebo:** the window uses Gazebo's standard layout (`config/gui.config`) plus the Camera preview.
+  Left-drag = pan, middle-drag (or Shift + left-drag) = orbit, scroll = zoom. Click a model to select it.
+- **RViz:** use `rviz/camera.rviz` (toolbar with Interact / Move Camera). Left-drag = orbit, middle-drag = pan, scroll = zoom.
+  Drag the panel borders to enlarge the Camera image / Depth image panels.
