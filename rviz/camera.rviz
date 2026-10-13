@@ -58,7 +58,10 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-      Normalize Range: true
+      # Fixed 0-8 m range: with auto-normalise, the 'inf' pixels (sky / beyond 8 m) make the image all black.
+      Normalize Range: false
+      Min Value: 0
+      Max Value: 8
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48

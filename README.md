@@ -62,3 +62,8 @@ a GPU (VM / WSL), change `ogre2` to `ogre` in the Sensors plugin of `worlds/came
   Left-drag = pan, middle-drag (or Shift + left-drag) = orbit, scroll = zoom. Click a model to select it.
 - **RViz:** use `rviz/camera.rviz` (toolbar with Interact / Move Camera). Left-drag = orbit, middle-drag = pan, scroll = zoom.
   Drag the panel borders to enlarge the Camera image / Depth image panels.
+
+## Point cloud looks rotated (floor standing up like a wall)?
+
+Gazebo's `rgbd_camera` point cloud uses the Gazebo axes (x forward, y left, z up), so the sensor in
+`description/camera.xacro` must use `<gz_frame_id>camera_link</gz_frame_id>`, **not** `camera_link_optical`.

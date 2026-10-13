@@ -64,8 +64,12 @@
                 </depth_camera>
             </camera>
             <topic>camera</topic>
-            <!-- Frame stamped on the images (optical frame: z forward, x right, y down) -->
-            <gz_frame_id>camera_link_optical</gz_frame_id>
+            <!-- Frame stamped on the images AND the point cloud.
+                 Gazebo's rgbd_camera point cloud uses the Gazebo convention (x forward, y left, z up),
+                 which is exactly the camera_link frame. Do NOT use camera_link_optical here: RViz would
+                 then rotate the cloud by 90 degrees and the floor would stand up like a wall.
+                 (gz-sensors has an open PR, #628, for a ROS-convention option; not in Harmonic yet.) -->
+            <gz_frame_id>camera_link</gz_frame_id>
         </sensor>
     </gazebo>
 
