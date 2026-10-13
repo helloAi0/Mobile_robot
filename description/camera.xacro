@@ -34,7 +34,14 @@
     <gazebo reference="camera_link">
         <material>Gazebo/Black</material>
 
-        <sensor name="camera" type="camera">
+        <!-- RGB-D camera for Gazebo Harmonic (gz-sim 8). One sensor publishes, under the topic name below:
+               /camera/image        colour image
+               /camera/depth_image  depth image
+               /camera/points       colour point cloud (what RViz shows as coloured 3D shapes)
+               /camera/camera_info
+             Do NOT use the Gazebo Classic plugin libgazebo_ros_camera.so (tutorials for older
+             versions use it); Harmonic cannot load it and the camera then publishes nothing. -->
+        <sensor name="camera" type="rgbd_camera">
             <pose> 0 0 0 0 0 0 </pose>
             <visualize>true</visualize>
             <update_rate>10</update_rate>
@@ -49,8 +56,14 @@
                     <near>0.05</near>
                     <far>8.0</far>
                 </clip>
+                <depth_camera>
+                    <clip>
+                        <near>0.1</near>
+                        <far>8.0</far>
+                    </clip>
+                </depth_camera>
             </camera>
-            <topic>camera/image_raw</topic>
+            <topic>camera</topic>
             <!-- Frame stamped on the images (optical frame: z forward, x right, y down) -->
             <gz_frame_id>camera_link_optical</gz_frame_id>
         </sensor>

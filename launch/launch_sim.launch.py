@@ -41,11 +41,18 @@ def generate_launch_description():
     # Bridge the Gazebo camera to ROS 2. The sensor in camera.xacro has <topic>camera/image_raw</topic>,
     # which Gazebo publishes as /camera/image_raw (NOT /my_bot/camera/image_raw, which is what
     # the old bridge listened to, so no image ever reached ROS or RViz).
+    # The sensor in camera.xacro is an rgbd_camera with <topic>camera</topic>, so Gazebo publishes
+    # /camera/image, /camera/depth_image, /camera/points and /camera/camera_info. They are remapped
+    # to the usual ROS names so /camera/image_raw keeps working in RViz.
     camera_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=['/camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image',
+        arguments=['/camera/image@sensor_msgs/msg/Image[gz.msgs.Image',
+                   '/camera/depth_image@sensor_msgs/msg/Image[gz.msgs.Image',
+                   '/camera/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
                    '/camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo'],
+        remappings=[('/camera/image', '/camera/image_raw'),
+                    ('/camera/depth_image', '/camera/depth/image_raw')],
         output='screen'
     )
 

@@ -35,7 +35,15 @@ does not load the Sensors system, so the camera never rendered. The new world lo
 objects in front of the robot and opens a floating **Camera preview** panel in the Gazebo window
 (if it is empty, pick `/camera/image_raw` in its drop-down).
 
-For ROS 2 / RViz the image is bridged as `/camera/image_raw` (and `/camera/camera_info`):
+For ROS 2 / RViz the camera is an `rgbd_camera` (Gazebo Harmonic). It is bridged as
+`/camera/image_raw`, `/camera/depth/image_raw`, `/camera/points` (coloured point cloud) and `/camera/camera_info`.
+Do not use `libgazebo_ros_camera.so` or `<plugin ... gazebo_ros_...>` from older (Gazebo Classic) tutorials: Harmonic cannot load them.
+
+```bash
+rviz2 -d $(ros2 pkg prefix mobile_robot)/share/mobile_robot/rviz/camera.rviz   # image + depth + coloured 3D points
+```
+
+Manual checks:
 
 ```bash
 ros2 topic hz /camera/image_raw          # should show ~10 Hz

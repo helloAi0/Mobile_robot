@@ -1,0 +1,72 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: Grid
+    - Class: rviz_default_plugins/RobotModel
+      Enabled: true
+      Name: RobotModel
+      Description Source: Topic
+      Description Topic:
+        Value: /robot_description
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Name: TF
+    - Class: rviz_default_plugins/PointCloud2
+      Enabled: true
+      Name: PointCloud2 (colour)
+      Topic:
+        Value: /camera/points
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+      Style: Flat Squares
+      Size (m): 0.01
+      Alpha: 1
+      Color Transformer: RGB8
+      Position Transformer: XYZ
+      Use rainbow: true
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: Camera image
+      Topic:
+        Value: /camera/image_raw
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+      Normalize Range: true
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: Depth image
+      Topic:
+        Value: /camera/depth/image_raw
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+      Normalize Range: true
+  Global Options:
+    Fixed Frame: base_link
+    Frame Rate: 30
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 6
+      Pitch: 0.5
+      Yaw: 3.3
+      Focal Point:
+        X: 2
+        Y: 0
+        Z: 0

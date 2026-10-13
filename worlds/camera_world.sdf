@@ -147,7 +147,7 @@
 
       <plugin filename="EntityTree" name="Entity tree"/>
 
-      <!-- Camera preview. If it is empty, use the drop-down in the panel and pick /camera/image_raw -->
+      <!-- Camera preview. If it is empty, use the drop-down in the panel and pick /camera/image -->
       <plugin filename="ImageDisplay" name="Camera preview">
         <gz-gui>
           <title>Camera preview</title>
@@ -157,7 +157,7 @@
           <property type="double" key="width">400</property>
           <property type="double" key="height">340</property>
         </gz-gui>
-        <topic>/camera/image_raw</topic>
+        <topic>/camera/image</topic>
         <topic_picker>true</topic_picker>
       </plugin>
     </gui>
