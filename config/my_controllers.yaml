@@ -18,7 +18,8 @@ diff_cont:
     right_wheel_names: ['right_wheel_joint']
     wheel_separation: 0.35
     wheel_radius: 0.05
-    use_stamped_vel: false
+    # Jazzy: the controller listens on /diff_cont/cmd_vel as geometry_msgs/TwistStamped.
+    # (use_stamped_vel was removed, so the old "false" setting no longer gives a plain Twist topic.)
     open_loop: true
 
 

@@ -46,21 +46,25 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         arguments=['-topic', 'robot_description',
-                   '-entity', 'my_bot',
+                   '-name', 'my_bot',
                    '-z', '0.05'],
         output='screen'
     )
 
+    # The controller_manager only exists after Gazebo has loaded the robot, so give the
+    # spawners plenty of time to wait for it (default is too short on slow starts).
     diff_drive_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["diff_cont"],
+        arguments=["diff_cont", "--controller-manager-timeout", "120"],
+        output='screen',
     )
 
     joint_broad_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_broad"],
+        arguments=["joint_broad", "--controller-manager-timeout", "120"],
+        output='screen',
     )
 
     return LaunchDescription([
