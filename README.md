@@ -26,3 +26,23 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
 
 Then press `i` (forward), `u` (forward-left), `o` (forward-right), `k` (stop).
 `use_sim_time:=true` matters: the stamps must use Gazebo's clock or the controller drops the commands as stale.
+
+
+## Camera preview (Gazebo + RViz)
+
+`launch_sim.launch.py` now starts Gazebo with `worlds/camera_world.sdf`. Gazebo's stock `empty.sdf`
+does not load the Sensors system, so the camera never rendered. The new world loads it, adds a few
+objects in front of the robot and opens a floating **Camera preview** panel in the Gazebo window
+(if it is empty, pick `/camera/image_raw` in its drop-down).
+
+For ROS 2 / RViz the image is bridged as `/camera/image_raw` (and `/camera/camera_info`):
+
+```bash
+ros2 topic hz /camera/image_raw          # should show ~10 Hz
+rviz2                                    # Add -> By topic -> /camera/image_raw -> Image
+                                         # (Fixed Frame: base_link)
+```
+
+Quick checks if there is no image: `gz topic -l | grep camera` (should list `/camera/image_raw`)
+and `ros2 topic list | grep camera`. If Gazebo crashes or the image is black on a machine without
+a GPU (VM / WSL), change `ogre2` to `ogre` in the Sensors plugin of `worlds/camera_world.sdf`.

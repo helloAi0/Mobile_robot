@@ -51,6 +51,8 @@
                 </clip>
             </camera>
             <topic>camera/image_raw</topic>
+            <!-- Frame stamped on the images (optical frame: z forward, x right, y down) -->
+            <gz_frame_id>camera_link_optical</gz_frame_id>
         </sensor>
     </gazebo>
 

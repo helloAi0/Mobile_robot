@@ -18,11 +18,16 @@ def generate_launch_description():
         )]), launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'true'}.items()
     )
 
+    # Our own world: the stock empty.sdf does not load the Sensors system, so the camera
+    # would never render. This one does, and also opens a camera preview panel.
+    world_path = os.path.join(
+        get_package_share_directory(package_name), 'worlds', 'camera_world.sdf')
+
     # Include the Gazebo Sim (Harmonic) launch file
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')]),
-        launch_arguments={'gz_args': 'empty.sdf -r'}.items()
+        launch_arguments={'gz_args': f'-r {world_path}'}.items()
     )
 
     # Bridge the Gazebo clock to ROS 2
@@ -33,11 +38,14 @@ def generate_launch_description():
         output='screen'
     )
 
-    # Bridge the Gazebo camera topic to ROS 2
+    # Bridge the Gazebo camera to ROS 2. The sensor in camera.xacro has <topic>camera/image_raw</topic>,
+    # which Gazebo publishes as /camera/image_raw (NOT /my_bot/camera/image_raw, which is what
+    # the old bridge listened to, so no image ever reached ROS or RViz).
     camera_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=['/my_bot/camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image'],
+        arguments=['/camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image',
+                   '/camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo'],
         output='screen'
     )
 
