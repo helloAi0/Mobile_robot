@@ -24,6 +24,12 @@ def generate_launch_description():
     webcam_arg = DeclareLaunchArgument(
         'webcam', default_value='false',
         description='true = also publish a real USB webcam as /webcam/image_raw (needs ros-jazzy-v4l2-camera)')
+    relay_arg = DeclareLaunchArgument(
+        'relay', default_value='true',
+        description='true = forward a normal /cmd_vel (Twist) to /diff_cont/cmd_vel (TwistStamped) so any teleop works')
+    rviz_arg = DeclareLaunchArgument(
+        'rviz', default_value='true',
+        description='true = also open RViz with rviz/camera.rviz (point cloud, lidar, images, detections)')
     detector_arg = DeclareLaunchArgument(
         'detector', default_value='true',
         description='true = run the simple lidar object detector (publishes /detections markers)')
@@ -114,6 +120,25 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('detector')),
     )
 
+    # /cmd_vel (Twist) -> /diff_cont/cmd_vel (TwistStamped), stamped with sim time
+    relay = Node(
+        package=package_name,
+        executable='cmd_vel_relay.py',
+        parameters=[{'use_sim_time': True}],
+        output='screen',
+        condition=IfCondition(LaunchConfiguration('relay')),
+    )
+
+    # RViz with our config (on sim time, like everything else)
+    rviz = Node(
+        package='rviz2',
+        executable='rviz2',
+        arguments=['-d', os.path.join(pkg_share, 'rviz', 'camera.rviz')],
+        parameters=[{'use_sim_time': True}],
+        output='log',
+        condition=IfCondition(LaunchConfiguration('rviz')),
+    )
+
     # Optional real webcam (only if you have one): /webcam/image_raw
     webcam = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(pkg_share, 'launch', 'webcam.launch.py')]),
@@ -124,6 +149,8 @@ def generate_launch_description():
         world_arg,
         webcam_arg,
         detector_arg,
+        relay_arg,
+        rviz_arg,
         rsp,
         gazebo,
         clock_bridge,
@@ -133,6 +160,8 @@ def generate_launch_description():
         diff_drive_spawner,
         joint_broad_spawner,
         detector,
+        relay,
+        rviz,
         webcam,
     ])
 

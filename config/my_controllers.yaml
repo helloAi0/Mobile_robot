@@ -21,6 +21,11 @@ diff_cont:
     # Jazzy: the controller listens on /diff_cont/cmd_vel as geometry_msgs/TwistStamped.
     # (use_stamped_vel was removed, so the old "false" setting no longer gives a plain Twist topic.)
     open_loop: true
+    # teleop_twist_keyboard sends ONE message per key press and never repeats it, and the controller
+    # brakes when a command is older than cmd_vel_timeout (default 0.5 s). With the default a tap on 'i'
+    # moves the robot only ~25 cm. 10 s means: press 'i' and it keeps going (up to 10 s) until you press
+    # 'k' (stop). Simulation only; use a small value (0.5) on a real robot.
+    cmd_vel_timeout: 10.0
 
 
 

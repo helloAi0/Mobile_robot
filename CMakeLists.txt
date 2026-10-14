@@ -38,7 +38,7 @@ install(
 )
 
 install(
-  PROGRAMS scripts/object_detector.py
+  PROGRAMS scripts/object_detector.py scripts/cmd_vel_relay.py scripts/teleop.sh scripts/diagnose.sh
   DESTINATION lib/${PROJECT_NAME}
 )
 
