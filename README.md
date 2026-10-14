@@ -8,25 +8,25 @@ Note that each directory currently has at least one file in it to ensure that gi
 
 ## Driving the robot with the keyboard (ROS 2 Jazzy + Gazebo Harmonic)
 
-The `diff_drive_controller` listens on `/diff_cont/cmd_vel` and expects a **TwistStamped**
-message. `teleop_twist_keyboard` publishes a plain `Twist` on `/cmd_vel` by default, which
-nothing is listening to, so the robot stays still. Run it like this:
+The `diff_drive_controller` listens on `/diff_cont/cmd_vel` and expects a **TwistStamped**. The launch file also
+starts `cmd_vel_relay.py`, which forwards a plain `/cmd_vel` (Twist) to it, so either of these works:
 
 ```bash
-# Terminal 1
+# Terminal 1: simulation (also opens RViz with the right config)
 colcon build --symlink-install && source install/setup.bash
 ros2 launch mobile_robot launch_sim.launch.py
 
-# Terminal 2 (wait until both controllers are "active": ros2 control list_controllers)
-source /opt/ros/jazzy/setup.bash
-ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
-  -p stamped:=true -p use_sim_time:=true \
-  -r cmd_vel:=/diff_cont/cmd_vel
+# Terminal 2: keyboard (click into this terminal first so it has focus!)
+source ~/dev_ws/install/setup.bash
+ros2 run mobile_robot teleop.sh
 ```
 
-Then press `i` (forward), `u` (forward-left), `o` (forward-right), `k` (stop).
-`use_sim_time:=true` matters: the stamps must use Gazebo's clock or the controller drops the commands as stale.
+Keys: `i` forward, `,` backward, `j`/`l` turn, `u`/`o` forward + turn, **`k` stop**, `q`/`z` faster/slower.
+`teleop_twist_keyboard` sends one message per key press; `cmd_vel_timeout: 10.0` in `config/my_controllers.yaml`
+keeps the robot moving after a press until you press `k` (simulation only).
 
+Robot does not move? Run `ros2 run mobile_robot diagnose.sh --move` and read the `[FAIL]` lines. Also kill leftovers
+of an earlier run before relaunching: `pkill -f "gz sim"; pkill -f ruby`.
 
 ## Camera preview (Gazebo + RViz)
 
@@ -95,17 +95,9 @@ What you see:
   `ros2 param set /object_detector detect_range 6.0`.
 - Drive towards the people with the keyboard teleop (see above) and watch the point cloud and markers in RViz.
 
-Notes: actors have no collision (the robot can drive through them) but the camera and lidar do see them. A walking
-*woman* from Fuel (`Luca/FemaleVisitorWalk`) is included as a commented, untested block at the end of the world file.
-
-## Real webcam (optional, only if you have a camera)
-
-```bash
-sudo apt install ros-jazzy-v4l2-camera
-ros2 launch mobile_robot webcam.launch.py video_device:=/dev/video0      # or: launch_sim.launch.py webcam:=true
-```
-
-Then tick **Webcam (optional)** in the RViz Displays list (topic `/webcam/image_raw`). A normal webcam gives a colour
-image only. For real depth / point clouds you need a depth camera (RealSense, OAK-D, ...) with its own ROS driver;
-publish or remap its topics to `/camera/image_raw`, `/camera/depth/image_raw` and `/camera/points` and the same RViz
-file works. On Windows/WSL a USB camera is not visible by default (needs usbipd).
+Notes: actors have no collision (the robot can drive through them) but the camera and lidar do see them.
+The world has a road with crosswalk, three buildings, trees, lamps, benches, cars, a man walking along the
+crosswalk and a woman (Fuel `Luca/FemaleVisitorWalk`) walking up and down the sidewalk, plus a standing woman.
+If a walker floats or sinks, change the `z` values (1.0) of her waypoints in `worlds/street_world.sdf`.
+RViz shows no lidar? Start it with `-d .../camera.rviz` (the launch file does this), and in Gazebo click the
+refresh arrow in the "Visualize lidar" panel and pick `/scan`.
