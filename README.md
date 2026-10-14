@@ -67,3 +67,45 @@ a GPU (VM / WSL), change `ogre2` to `ogre` in the Sensors plugin of `worlds/came
 
 Gazebo's `rgbd_camera` point cloud uses the Gazebo axes (x forward, y left, z up), so the sensor in
 `description/camera.xacro` must use `<gz_frame_id>camera_link</gz_frame_id>`, **not** `camera_link_optical`.
+
+
+## Street world with people, lidar and a simple detector
+
+`ros2 launch mobile_robot launch_sim.launch.py` now starts `worlds/street_world.sdf`: sidewalk, grass, road,
+a building, trees, a mailbox and a box, a **walking pedestrian** (crosses 3 m in front of the robot, back and forth)
+and a **standing woman** (Fuel model "Casual female"). The people are downloaded from Gazebo Fuel the first time
+(internet needed, can take a minute; cached in `~/.gz/fuel`).
+
+Launch arguments:
+
+```bash
+ros2 launch mobile_robot launch_sim.launch.py world:=camera_world.sdf   # the older, simple world
+ros2 launch mobile_robot launch_sim.launch.py detector:=false           # no detector node
+ros2 launch mobile_robot launch_sim.launch.py webcam:=true              # also publish a real webcam
+```
+
+What you see:
+
+- **Gazebo:** Camera preview panel, plus the **Visualize lidar** panel that draws the blue lidar fan.
+- **RViz** (`rviz2 -d $(ros2 pkg prefix mobile_robot)/share/mobile_robot/rviz/camera.rviz`): coloured point cloud
+  of the scene and the people, the blue lidar scan (`/scan`), the colour and depth images, and red spheres with an
+  "object x.x m" label (`/detections`).
+- `scripts/object_detector.py` is a *very simple* lidar detector: it groups beams into objects closer than 4 m in
+  the front +/-70 degrees. It does **not** recognise people, it just reports "something is here". Tune with
+  `ros2 param set /object_detector detect_range 6.0`.
+- Drive towards the people with the keyboard teleop (see above) and watch the point cloud and markers in RViz.
+
+Notes: actors have no collision (the robot can drive through them) but the camera and lidar do see them. A walking
+*woman* from Fuel (`Luca/FemaleVisitorWalk`) is included as a commented, untested block at the end of the world file.
+
+## Real webcam (optional, only if you have a camera)
+
+```bash
+sudo apt install ros-jazzy-v4l2-camera
+ros2 launch mobile_robot webcam.launch.py video_device:=/dev/video0      # or: launch_sim.launch.py webcam:=true
+```
+
+Then tick **Webcam (optional)** in the RViz Displays list (topic `/webcam/image_raw`). A normal webcam gives a colour
+image only. For real depth / point clouds you need a depth camera (RealSense, OAK-D, ...) with its own ROS driver;
+publish or remap its topics to `/camera/image_raw`, `/camera/depth/image_raw` and `/camera/points` and the same RViz
+file works. On Windows/WSL a USB camera is not visible by default (needs usbipd).

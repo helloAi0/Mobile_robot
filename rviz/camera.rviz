@@ -39,6 +39,28 @@ Visualization Manager:
       Decay Time: 0
       Color Transformer: RGB8
       Position Transformer: XYZ
+    - Class: rviz_default_plugins/LaserScan
+      Enabled: true
+      Name: Lidar scan
+      Topic:
+        Value: /scan
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+      Style: Flat Squares
+      Size (m): 0.05
+      Color Transformer: FlatColor
+      Color: 0; 120; 255
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Detections
+      Topic:
+        Value: /detections
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
     - Class: rviz_default_plugins/Image
       Enabled: true
       Name: Camera image
@@ -62,6 +84,17 @@ Visualization Manager:
       Normalize Range: false
       Min Value: 0
       Max Value: 8
+    - Class: rviz_default_plugins/Image
+      Enabled: false
+      # Optional: only has data if you started the real webcam (launch arg webcam:=true)
+      Name: Webcam (optional)
+      Topic:
+        Value: /webcam/image_raw
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+      Normalize Range: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48

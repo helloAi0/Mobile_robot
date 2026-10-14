@@ -3,34 +3,49 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, TextSubstitution
 
 from launch_ros.actions import Node
+
 
 def generate_launch_description():
 
     package_name = 'mobile_robot'
+    pkg_share = get_package_share_directory(package_name)
+
+    # ---- launch arguments --------------------------------------------------------------------
+    #   ros2 launch mobile_robot launch_sim.launch.py world:=camera_world.sdf webcam:=true detector:=false
+    world_arg = DeclareLaunchArgument(
+        'world', default_value='street_world.sdf',
+        description='World file inside the package worlds/ folder (street_world.sdf or camera_world.sdf)')
+    webcam_arg = DeclareLaunchArgument(
+        'webcam', default_value='false',
+        description='true = also publish a real USB webcam as /webcam/image_raw (needs ros-jazzy-v4l2-camera)')
+    detector_arg = DeclareLaunchArgument(
+        'detector', default_value='true',
+        description='true = run the simple lidar object detector (publishes /detections markers)')
 
     rsp = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(
-            get_package_share_directory(package_name), 'launch', 'rsp.launch.py'
-        )]), launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'true'}.items()
+        PythonLaunchDescriptionSource([os.path.join(pkg_share, 'launch', 'rsp.launch.py')]),
+        launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'true'}.items()
     )
 
-    # Our own world: the stock empty.sdf does not load the Sensors system, so the camera
-    # would never render. This one does, and also opens a camera preview panel.
-    world_path = os.path.join(
-        get_package_share_directory(package_name), 'worlds', 'camera_world.sdf')
-
-    # Include the Gazebo Sim (Harmonic) launch file
-    gui_config = os.path.join(
-        get_package_share_directory(package_name), 'config', 'gui.config')
+    # Our own worlds: the stock empty.sdf does not load the Sensors system, so the camera and
+    # lidar would never render. gui.config is Gazebo's standard window (mouse orbit/zoom, toolbars)
+    # plus a camera preview and the lidar visualiser.
+    gui_config = os.path.join(pkg_share, 'config', 'gui.config')
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')]),
-        launch_arguments={'gz_args': f'-r {world_path} --gui-config {gui_config}'}.items()
+        launch_arguments={'gz_args': [
+            TextSubstitution(text='-r '),
+            PathJoinSubstitution([pkg_share, 'worlds', LaunchConfiguration('world')]),
+            TextSubstitution(text=f' --gui-config {gui_config}'),
+        ]}.items()
     )
 
     # Bridge the Gazebo clock to ROS 2
@@ -41,12 +56,9 @@ def generate_launch_description():
         output='screen'
     )
 
-    # Bridge the Gazebo camera to ROS 2. The sensor in camera.xacro has <topic>camera/image_raw</topic>,
-    # which Gazebo publishes as /camera/image_raw (NOT /my_bot/camera/image_raw, which is what
-    # the old bridge listened to, so no image ever reached ROS or RViz).
     # The sensor in camera.xacro is an rgbd_camera with <topic>camera</topic>, so Gazebo publishes
     # /camera/image, /camera/depth_image, /camera/points and /camera/camera_info. They are remapped
-    # to the usual ROS names so /camera/image_raw keeps working in RViz.
+    # to the usual ROS names (/camera/image_raw, /camera/depth/image_raw).
     camera_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -56,6 +68,14 @@ def generate_launch_description():
                    '/camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo'],
         remappings=[('/camera/image', '/camera/image_raw'),
                     ('/camera/depth_image', '/camera/depth/image_raw')],
+        output='screen'
+    )
+
+    # Lidar (<topic>scan</topic> in lidar.xacro) -> ROS /scan (frame laser_frame)
+    lidar_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=['/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan'],
         output='screen'
     )
 
@@ -85,14 +105,35 @@ def generate_launch_description():
         output='screen',
     )
 
+    # Simple lidar detector: red sphere + "object x.x m" label in RViz (/detections)
+    detector = Node(
+        package=package_name,
+        executable='object_detector.py',
+        parameters=[{'use_sim_time': True}],
+        output='screen',
+        condition=IfCondition(LaunchConfiguration('detector')),
+    )
+
+    # Optional real webcam (only if you have one): /webcam/image_raw
+    webcam = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(pkg_share, 'launch', 'webcam.launch.py')]),
+        condition=IfCondition(LaunchConfiguration('webcam')),
+    )
+
     return LaunchDescription([
+        world_arg,
+        webcam_arg,
+        detector_arg,
         rsp,
         gazebo,
         clock_bridge,
         camera_bridge,
+        lidar_bridge,
         spawn_entity,
         diff_drive_spawner,
-        joint_broad_spawner
+        joint_broad_spawner,
+        detector,
+        webcam,
     ])
 
 
