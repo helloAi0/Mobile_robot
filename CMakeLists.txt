@@ -38,7 +38,7 @@ install(
 )
 
 install(
-  PROGRAMS scripts/object_detector.py scripts/cmd_vel_relay.py scripts/teleop.sh scripts/diagnose.sh scripts/teleop_keys.py scripts/cloud_filter.py scripts/tune_actor_height.py
+  PROGRAMS scripts/object_detector.py scripts/cmd_vel_mux.py scripts/auto_explore.py scripts/teleop.sh scripts/diagnose.sh scripts/teleop_keys.py scripts/cloud_filter.py scripts/tune_actor_height.py scripts/save_map.sh
   DESTINATION lib/${PROJECT_NAME}
 )
 

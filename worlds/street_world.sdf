@@ -743,11 +743,11 @@
         <delay_start>0.0</delay_start>
         <auto_start>true</auto_start>
         <trajectory id="0" type="walk" tension="0.6">
-          <waypoint><time>0</time><pose>7 2.8 0.9 0 0 0.0</pose></waypoint>
-          <waypoint><time>8</time><pose>15 2.8 0.9 0 0 0.0</pose></waypoint>
-          <waypoint><time>8.5</time><pose>15 2.8 0.9 0 0 3.14</pose></waypoint>
-          <waypoint><time>16.5</time><pose>7 2.8 0.9 0 0 3.14</pose></waypoint>
-          <waypoint><time>17</time><pose>7 2.8 0.9 0 0 0.0</pose></waypoint>
+          <waypoint><time>0</time><pose>7 2.8 0.0 0 0 0.0</pose></waypoint>
+          <waypoint><time>8</time><pose>15 2.8 0.0 0 0 0.0</pose></waypoint>
+          <waypoint><time>8.5</time><pose>15 2.8 0.0 0 0 3.14</pose></waypoint>
+          <waypoint><time>16.5</time><pose>7 2.8 0.0 0 0 3.14</pose></waypoint>
+          <waypoint><time>17</time><pose>7 2.8 0.0 0 0 0.0</pose></waypoint>
         </trajectory>
       </script>
     </actor>
@@ -789,11 +789,11 @@
         <delay_start>0.0</delay_start>
         <auto_start>true</auto_start>
         <trajectory id="0" type="walk" tension="0.6">
-          <waypoint><time>0</time><pose>20 -2.0 0.9 0 0 3.14</pose></waypoint>
-          <waypoint><time>10</time><pose>10 -2.0 0.9 0 0 3.14</pose></waypoint>
-          <waypoint><time>10.5</time><pose>10 -2.0 0.9 0 0 0.0</pose></waypoint>
-          <waypoint><time>20.5</time><pose>20 -2.0 0.9 0 0 0.0</pose></waypoint>
-          <waypoint><time>21</time><pose>20 -2.0 0.9 0 0 3.14</pose></waypoint>
+          <waypoint><time>0</time><pose>20 -2.0 0.0 0 0 3.14</pose></waypoint>
+          <waypoint><time>10</time><pose>10 -2.0 0.0 0 0 3.14</pose></waypoint>
+          <waypoint><time>10.5</time><pose>10 -2.0 0.0 0 0 0.0</pose></waypoint>
+          <waypoint><time>20.5</time><pose>20 -2.0 0.0 0 0 0.0</pose></waypoint>
+          <waypoint><time>21</time><pose>20 -2.0 0.0 0 0 3.14</pose></waypoint>
         </trajectory>
       </script>
     </actor>
@@ -810,11 +810,11 @@
         <delay_start>0.0</delay_start>
         <auto_start>true</auto_start>
         <trajectory id="0" type="walk" tension="0.6">
-          <waypoint><time>0</time><pose>0.5 -5.0 0.9 0 0 0.0</pose></waypoint>
-          <waypoint><time>6</time><pose>6.5 -5.0 0.9 0 0 0.0</pose></waypoint>
-          <waypoint><time>6.5</time><pose>6.5 -5.0 0.9 0 0 3.14</pose></waypoint>
-          <waypoint><time>12.5</time><pose>0.5 -5.0 0.9 0 0 3.14</pose></waypoint>
-          <waypoint><time>13</time><pose>0.5 -5.0 0.9 0 0 0.0</pose></waypoint>
+          <waypoint><time>0</time><pose>0.5 -5.0 0.0 0 0 0.0</pose></waypoint>
+          <waypoint><time>6</time><pose>6.5 -5.0 0.0 0 0 0.0</pose></waypoint>
+          <waypoint><time>6.5</time><pose>6.5 -5.0 0.0 0 0 3.14</pose></waypoint>
+          <waypoint><time>12.5</time><pose>0.5 -5.0 0.0 0 0 3.14</pose></waypoint>
+          <waypoint><time>13</time><pose>0.5 -5.0 0.0 0 0 0.0</pose></waypoint>
         </trajectory>
       </script>
     </actor>

@@ -26,6 +26,8 @@ echo "$CTL" | grep -q "joint_broad.*active" && ok "joint_broad is active" || bad
 
 echo "== Driving path (keyboard -> robot)"
 INFO=$(timeout 8 ros2 topic info /diff_cont/cmd_vel 2>/dev/null)
+MUX=$(timeout 8 ros2 topic info /cmd_vel_teleop 2>/dev/null | awk '/Subscription count/ {print $3}')
+[ "${MUX:-0}" -ge 1 ] 2>/dev/null && ok "cmd_vel_mux is listening for the keyboard (/cmd_vel_teleop)" || bad "no cmd_vel_mux: keyboard commands go nowhere"
 echo "$INFO" | grep -q "TwistStamped" && ok "/diff_cont/cmd_vel expects TwistStamped (teleop needs -p stamped:=true)" || bad "/diff_cont/cmd_vel missing or not TwistStamped:$(printf '\n%s' "$INFO" | sed 's/^/        /')"
 SUBS=$(echo "$INFO" | awk '/Subscription count/ {print $3}')
 [ "${SUBS:-0}" -ge 1 ] 2>/dev/null && ok "controller is listening ($SUBS subscriber)" || bad "nobody listens on /diff_cont/cmd_vel"
@@ -33,14 +35,14 @@ PUBS=$(echo "$INFO" | awk '/Publisher count/ {print $3}')
 echo "        publishers right now: ${PUBS:-0} (1 while teleop is running; keys only reach it if its terminal is focused)"
 
 echo "== Sensors"
-for t in /scan /camera/image_raw /camera/depth/image_raw /camera/points /joint_states; do
+for t in /scan /camera/image_raw /camera/depth/image_raw /camera/points /joint_states /odom /map; do
   has_msg "$t" 10 && ok "$t is publishing" || bad "$t: no message in 10 s"
 done
 
 if [ "$MOVE" = 1 ]; then
   echo "== Wheel test (drives ~0.5 m forward)"
-  ros2 topic pub -r 10 -t 25 /diff_cont/cmd_vel geometry_msgs/msg/TwistStamped \
-     "{header: {stamp: {sec: 0, nanosec: 0}}, twist: {linear: {x: 0.3}}}" >/dev/null 2>&1 &
+  ros2 topic pub -r 10 -t 25 /cmd_vel_teleop geometry_msgs/msg/Twist \
+     "{linear: {x: 0.3}}" >/dev/null 2>&1 &
   PUB=$!
   sleep 1.5
   VEL=$(timeout 6 ros2 topic echo --once /joint_states --field velocity 2>/dev/null | grep -Eo -- '-?[0-9]+\.?[0-9]*(e-?[0-9]+)?' | awk '{v=$1<0?-$1:$1; if (v>m) m=v} END {print m+0}')
