@@ -33,9 +33,9 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-      Style: Flat Squares
-      Size (m): 0.02
-      Alpha: 1
+      Style: Points
+      Size (Pixels): 2
+      Alpha: 0.7
       Decay Time: 0
       Color Transformer: RGB8
       Position Transformer: XYZ
@@ -48,10 +48,13 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-      Style: Flat Squares
-      Size (m): 0.05
+      # Big bright spheres, no decay: easy to see against the grey floor and the colour point cloud
+      Style: Spheres
+      Size (m): 0.07
+      Alpha: 1
+      Decay Time: 0
       Color Transformer: FlatColor
-      Color: 0; 120; 255
+      Color: 255; 40; 40
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
       Name: Detections
