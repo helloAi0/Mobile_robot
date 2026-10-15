@@ -120,6 +120,14 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('detector')),
     )
 
+    # Removes the floor from the 3D camera cloud -> /camera/points_filtered (what RViz shows)
+    cloud_filter = Node(
+        package=package_name,
+        executable='cloud_filter.py',
+        parameters=[{'use_sim_time': True}],
+        output='screen',
+    )
+
     # /cmd_vel (Twist) -> /diff_cont/cmd_vel (TwistStamped), stamped with sim time
     relay = Node(
         package=package_name,
@@ -160,6 +168,7 @@ def generate_launch_description():
         diff_drive_spawner,
         joint_broad_spawner,
         detector,
+        cloud_filter,
         relay,
         rviz,
         webcam,
