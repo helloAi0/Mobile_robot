@@ -10,7 +10,10 @@ Visualization Manager:
   Displays:
     - Class: rviz_default_plugins/Grid
       Enabled: true
-      Name: Grid
+      Name: Grid (1 m squares)
+      Cell Size: 1
+      Plane Cell Count: 16
+      Color: 90; 90; 90
     - Class: rviz_default_plugins/RobotModel
       Enabled: true
       Name: RobotModel
@@ -26,38 +29,39 @@ Visualization Manager:
       Name: TF
     - Class: rviz_default_plugins/PointCloud2
       Enabled: true
-      Name: PointCloud2 (colour)
+      Name: Camera 3D (floor removed)
       Topic:
-        Value: /camera/points
+        Value: /camera/points_filtered
         Depth: 5
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-      Style: Points
-      Size (Pixels): 2
-      Alpha: 0.7
+      Style: Flat Squares
+      Size (m): 0.03
+      Alpha: 1
       Decay Time: 0
       Color Transformer: RGB8
       Position Transformer: XYZ
     - Class: rviz_default_plugins/LaserScan
       Enabled: true
-      Name: Lidar scan
+      Name: LIDAR (green dots)
       Topic:
         Value: /scan
         Depth: 5
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-      # Big bright spheres, no decay: easy to see against the grey floor and the colour point cloud
-      Style: Spheres
-      Size (m): 0.07
+      # The LIDAR: one thin ring of bright green dots = where its 720 beams hit something, 360 degrees
+      # around the robot, up to 12 m. Gaps in the ring = nothing within 12 m in that direction.
+      Style: Flat Squares
+      Size (m): 0.06
       Alpha: 1
       Decay Time: 0
       Color Transformer: FlatColor
-      Color: 255; 40; 40
+      Color: 0; 255; 80
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
-      Name: Detections
+      Name: Detections (orange + distance)
       Topic:
         Value: /detections
         Depth: 5
@@ -132,9 +136,9 @@ Visualization Manager:
       Class: rviz_default_plugins/Orbit
       Name: Current View
       Target Frame: <Fixed Frame>
-      Distance: 6
-      Pitch: 0.9
-      Yaw: 3.3
+      Distance: 9
+      Pitch: 1.15
+      Yaw: 3.14159
       Focal Point:
         X: 2
         Y: 0

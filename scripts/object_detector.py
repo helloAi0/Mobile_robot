@@ -80,18 +80,18 @@ def main():
                 sphere.type, sphere.action = Marker.SPHERE, Marker.ADD
                 sphere.pose.position.x, sphere.pose.position.y, sphere.pose.position.z = x, y, 0.0
                 sphere.pose.orientation.w = 1.0
-                sphere.scale.x = sphere.scale.y = sphere.scale.z = 0.4
-                sphere.color.r, sphere.color.g, sphere.color.b, sphere.color.a = 1.0, 0.1, 0.1, 0.8
+                sphere.scale.x = sphere.scale.y = sphere.scale.z = 0.22
+                sphere.color.r, sphere.color.g, sphere.color.b, sphere.color.a = 1.0, 0.55, 0.0, 0.55
                 sphere.lifetime.nanosec = 500_000_000
                 label = Marker()
                 label.header = msg.header
                 label.ns, label.id = 'label', i
                 label.type, label.action = Marker.TEXT_VIEW_FACING, Marker.ADD
-                label.pose.position.x, label.pose.position.y, label.pose.position.z = x, y, 0.5
+                label.pose.position.x, label.pose.position.y, label.pose.position.z = x, y, 0.4
                 label.pose.orientation.w = 1.0
-                label.scale.z = 0.25
+                label.scale.z = 0.14
                 label.color.r = label.color.g = label.color.b = label.color.a = 1.0
-                label.text = f'object {d:.1f} m'
+                label.text = f'{d:.1f} m'
                 label.lifetime.nanosec = 500_000_000
                 out.markers += [sphere, label]
             self.pub.publish(out)

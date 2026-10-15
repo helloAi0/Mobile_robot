@@ -70,35 +70,34 @@ Gazebo's `rgbd_camera` point cloud uses the Gazebo axes (x forward, y left, z up
 `description/camera.xacro` must use `<gz_frame_id>camera_link</gz_frame_id>`, **not** `camera_link_optical`.
 
 
-## Street world with people, lidar and a simple detector
+## Street world, physics, lidar and detector
 
-`ros2 launch mobile_robot launch_sim.launch.py` now starts `worlds/street_world.sdf`: sidewalk, grass, road,
-a building, trees, a mailbox and a box, a **walking pedestrian** (crosses 3 m in front of the robot, back and forth)
-and a **standing woman** (Fuel model "Casual female"). The people are downloaded from Gazebo Fuel the first time
-(internet needed, can take a minute; cached in `~/.gz/fuel`).
+`ros2 launch mobile_robot launch_sim.launch.py` starts `worlds/street_world.sdf` + Gazebo + RViz.
 
-Launch arguments:
+**World:** sidewalk, grass, road with crosswalk and cars, three buildings, trees, lamps, benches, kiosk, bus stop,
+fences, a ramp and speed bumps. **Free bodies with real physics** (push them, knock them over): traffic cones,
+barrels, crates (a stack), balls, a cardboard box. **Walking people** (Gazebo actors): two men and three women
+(Fuel `Luca/FemaleVisitorWalk`). Actors are animations: camera and lidar see them but they have no collision.
+Fuel models are downloaded on the first start (internet needed, cached in `~/.gz/fuel`).
+
+Walkers floating or sinking? `ros2 run mobile_robot tune_actor_height.py 0.8` (women; smaller = lower, try
+0.7 ... 1.1) or `... 1.0 man` for the men, then restart.
 
 ```bash
 ros2 launch mobile_robot launch_sim.launch.py world:=camera_world.sdf   # the older, simple world
-ros2 launch mobile_robot launch_sim.launch.py detector:=false           # no detector node
-ros2 launch mobile_robot launch_sim.launch.py webcam:=true              # also publish a real webcam
+ros2 launch mobile_robot launch_sim.launch.py detector:=false rviz:=false webcam:=true
 ```
 
-What you see:
+**How to read RViz** (`rviz/camera.rviz`, opened by the launch file):
 
-- **Gazebo:** Camera preview panel, plus the **Visualize lidar** panel that draws the blue lidar fan.
-- **RViz** (`rviz2 -d $(ros2 pkg prefix mobile_robot)/share/mobile_robot/rviz/camera.rviz`): coloured point cloud
-  of the scene and the people, the blue lidar scan (`/scan`), the colour and depth images, and red spheres with an
-  "object x.x m" label (`/detections`).
-- `scripts/object_detector.py` is a *very simple* lidar detector: it groups beams into objects closer than 4 m in
-  the front +/-70 degrees. It does **not** recognise people, it just reports "something is here". Tune with
-  `ros2 param set /object_detector detect_range 6.0`.
-- Drive towards the people with the keyboard teleop (see above) and watch the point cloud and markers in RViz.
+- Grid = 1 m squares, so you can read distances.
+- **Green dots = the LIDAR**: one ring around the robot. Each dot is a laser beam that hit something (720 beams,
+  360 degrees, up to 12 m). No dots in a direction = nothing within 12 m there.
+- **Camera 3D (floor removed)**: the depth camera as a coloured 3D cloud, only things standing on the floor
+  (`scripts/cloud_filter.py` removes the floor from `/camera/points`).
+- **Orange balls + "x.x m"** = `scripts/object_detector.py`: groups lidar dots into objects closer than 4 m in the
+  front +/-70 degrees. It does not recognise people, only "something is here".
+- Left panels: colour image and depth image of the camera.
 
-Notes: actors have no collision (the robot can drive through them) but the camera and lidar do see them.
-The world has a road with crosswalk, three buildings, trees, lamps, benches, cars, a man walking along the
-crosswalk and a woman (Fuel `Luca/FemaleVisitorWalk`) walking up and down the sidewalk, plus a standing woman.
-If a walker floats or sinks, change the `z` values (1.0) of her waypoints in `worlds/street_world.sdf`.
-RViz shows no lidar? Start it with `-d .../camera.rviz` (the launch file does this), and in Gazebo click the
-refresh arrow in the "Visualize lidar" panel and pick `/scan`.
+Gazebo: click the refresh arrow in the "Visualize lidar" / "Camera preview" panels and pick `/scan` / `/camera/image`.
+
