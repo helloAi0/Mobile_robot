@@ -4,6 +4,8 @@
     sidewalk (ground, grey) | grass + trees + 3 buildings on the left | curb + road with crosswalk and cars on the right
     lamp posts, benches, mailbox, trash can, planter, a cardboard box
     people: a man crossing at x=4.5 m, a woman walking along the sidewalk (x 7..15 m, y=2.8 m), a woman standing
+    obstacle course near the start: traffic-cone slalom, concrete barriers, barrels, pillars (give the lidar plenty to hit)
+    2 more walking people, kiosk, bus stop, fences
 
   - The robot spawns at the origin facing +x.
   - People are Gazebo "actors": animated meshes without physics. No collision (the robot can drive through
@@ -16,7 +18,7 @@
   <world name="default">
 
     <physics name="default_physics" type="ode">
-      <max_step_size>0.001</max_step_size>
+      <max_step_size>0.004</max_step_size>
       <real_time_factor>1.0</real_time_factor>
     </physics>
 
@@ -349,6 +351,208 @@
       <visual name="plant"><pose>0 0 0.8 0 0 0</pose><geometry><sphere><radius>0.45</radius></sphere></geometry><material><ambient>0.22 0.52 0.18 1</ambient><diffuse>0.22 0.52 0.18 1</diffuse></material></visual>
       </link>
     </model>
+    <model name="cone_1">
+      <static>true</static>
+      <pose>2.0 0.55 0 0 0 0</pose>
+      <link name="link">
+      <visual name="base"><pose>0 0 0.015 0 0 0</pose><geometry><box><size>0.34 0.34 0.03</size></box></geometry><material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material></visual>
+      <visual name="c1"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <collision name="c1_col"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry></collision>
+      <visual name="c2"><pose>0 0 0.46 0 0 0</pose><geometry><cylinder><radius>0.08</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <visual name="stripe"><pose>0 0 0.34 0 0 0</pose><geometry><cylinder><radius>0.105</radius><length>0.07</length></cylinder></geometry><material><ambient>0.92 0.92 0.92 1</ambient><diffuse>0.92 0.92 0.92 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="cone_2">
+      <static>true</static>
+      <pose>3.2 -0.55 0 0 0 0</pose>
+      <link name="link">
+      <visual name="base"><pose>0 0 0.015 0 0 0</pose><geometry><box><size>0.34 0.34 0.03</size></box></geometry><material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material></visual>
+      <visual name="c1"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <collision name="c1_col"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry></collision>
+      <visual name="c2"><pose>0 0 0.46 0 0 0</pose><geometry><cylinder><radius>0.08</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <visual name="stripe"><pose>0 0 0.34 0 0 0</pose><geometry><cylinder><radius>0.105</radius><length>0.07</length></cylinder></geometry><material><ambient>0.92 0.92 0.92 1</ambient><diffuse>0.92 0.92 0.92 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="cone_3">
+      <static>true</static>
+      <pose>4.4 0.55 0 0 0 0</pose>
+      <link name="link">
+      <visual name="base"><pose>0 0 0.015 0 0 0</pose><geometry><box><size>0.34 0.34 0.03</size></box></geometry><material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material></visual>
+      <visual name="c1"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <collision name="c1_col"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry></collision>
+      <visual name="c2"><pose>0 0 0.46 0 0 0</pose><geometry><cylinder><radius>0.08</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <visual name="stripe"><pose>0 0 0.34 0 0 0</pose><geometry><cylinder><radius>0.105</radius><length>0.07</length></cylinder></geometry><material><ambient>0.92 0.92 0.92 1</ambient><diffuse>0.92 0.92 0.92 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="cone_4">
+      <static>true</static>
+      <pose>5.6 -0.55 0 0 0 0</pose>
+      <link name="link">
+      <visual name="base"><pose>0 0 0.015 0 0 0</pose><geometry><box><size>0.34 0.34 0.03</size></box></geometry><material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material></visual>
+      <visual name="c1"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <collision name="c1_col"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry></collision>
+      <visual name="c2"><pose>0 0 0.46 0 0 0</pose><geometry><cylinder><radius>0.08</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <visual name="stripe"><pose>0 0 0.34 0 0 0</pose><geometry><cylinder><radius>0.105</radius><length>0.07</length></cylinder></geometry><material><ambient>0.92 0.92 0.92 1</ambient><diffuse>0.92 0.92 0.92 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="cone_5">
+      <static>true</static>
+      <pose>6.8 0.55 0 0 0 0</pose>
+      <link name="link">
+      <visual name="base"><pose>0 0 0.015 0 0 0</pose><geometry><box><size>0.34 0.34 0.03</size></box></geometry><material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material></visual>
+      <visual name="c1"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <collision name="c1_col"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry></collision>
+      <visual name="c2"><pose>0 0 0.46 0 0 0</pose><geometry><cylinder><radius>0.08</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <visual name="stripe"><pose>0 0 0.34 0 0 0</pose><geometry><cylinder><radius>0.105</radius><length>0.07</length></cylinder></geometry><material><ambient>0.92 0.92 0.92 1</ambient><diffuse>0.92 0.92 0.92 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="cone_6">
+      <static>true</static>
+      <pose>8.0 -0.55 0 0 0 0</pose>
+      <link name="link">
+      <visual name="base"><pose>0 0 0.015 0 0 0</pose><geometry><box><size>0.34 0.34 0.03</size></box></geometry><material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material></visual>
+      <visual name="c1"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <collision name="c1_col"><pose>0 0 0.18 0 0 0</pose><geometry><cylinder><radius>0.13</radius><length>0.3</length></cylinder></geometry></collision>
+      <visual name="c2"><pose>0 0 0.46 0 0 0</pose><geometry><cylinder><radius>0.08</radius><length>0.3</length></cylinder></geometry><material><ambient>1.0 0.45 0.05 1</ambient><diffuse>1.0 0.45 0.05 1</diffuse></material></visual>
+      <visual name="stripe"><pose>0 0 0.34 0 0 0</pose><geometry><cylinder><radius>0.105</radius><length>0.07</length></cylinder></geometry><material><ambient>0.92 0.92 0.92 1</ambient><diffuse>0.92 0.92 0.92 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="barrier_1">
+      <static>true</static>
+      <pose>3.0 -2.0 0 0 0 0.0</pose>
+      <link name="link">
+      <visual name="b"><pose>0 0 0.35 0 0 0</pose><geometry><box><size>1.6 0.35 0.7</size></box></geometry><material><ambient>0.62 0.62 0.6 1</ambient><diffuse>0.62 0.62 0.6 1</diffuse></material></visual>
+      <collision name="b_col"><pose>0 0 0.35 0 0 0</pose><geometry><box><size>1.6 0.35 0.7</size></box></geometry></collision>
+      <visual name="s"><pose>0 0 0.55 0 0 0</pose><geometry><box><size>1.6 0.36 0.12</size></box></geometry><material><ambient>0.9 0.75 0.1 1</ambient><diffuse>0.9 0.75 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="barrier_2">
+      <static>true</static>
+      <pose>8.0 1.2 0 0 0 0.5</pose>
+      <link name="link">
+      <visual name="b"><pose>0 0 0.35 0 0 0</pose><geometry><box><size>1.6 0.35 0.7</size></box></geometry><material><ambient>0.62 0.62 0.6 1</ambient><diffuse>0.62 0.62 0.6 1</diffuse></material></visual>
+      <collision name="b_col"><pose>0 0 0.35 0 0 0</pose><geometry><box><size>1.6 0.35 0.7</size></box></geometry></collision>
+      <visual name="s"><pose>0 0 0.55 0 0 0</pose><geometry><box><size>1.6 0.36 0.12</size></box></geometry><material><ambient>0.9 0.75 0.1 1</ambient><diffuse>0.9 0.75 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="barrier_3">
+      <static>true</static>
+      <pose>1.5 2.6 0 0 0 1.5708</pose>
+      <link name="link">
+      <visual name="b"><pose>0 0 0.35 0 0 0</pose><geometry><box><size>1.6 0.35 0.7</size></box></geometry><material><ambient>0.62 0.62 0.6 1</ambient><diffuse>0.62 0.62 0.6 1</diffuse></material></visual>
+      <collision name="b_col"><pose>0 0 0.35 0 0 0</pose><geometry><box><size>1.6 0.35 0.7</size></box></geometry></collision>
+      <visual name="s"><pose>0 0 0.55 0 0 0</pose><geometry><box><size>1.6 0.36 0.12</size></box></geometry><material><ambient>0.9 0.75 0.1 1</ambient><diffuse>0.9 0.75 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="barrel_1">
+      <static>true</static>
+      <pose>-2.5 1.5 0 0 0 0</pose>
+      <link name="link">
+      <visual name="b"><pose>0 0 0.45 0 0 0</pose><geometry><cylinder><radius>0.3</radius><length>0.9</length></cylinder></geometry><material><ambient>0.7 0.12 0.1 1</ambient><diffuse>0.7 0.12 0.1 1</diffuse></material></visual>
+      <collision name="b_col"><pose>0 0 0.45 0 0 0</pose><geometry><cylinder><radius>0.3</radius><length>0.9</length></cylinder></geometry></collision>
+      <visual name="r"><pose>0 0 0.6 0 0 0</pose><geometry><cylinder><radius>0.31</radius><length>0.06</length></cylinder></geometry><material><ambient>0.92 0.92 0.92 1</ambient><diffuse>0.92 0.92 0.92 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="barrel_2">
+      <static>true</static>
+      <pose>-2.5 -1.2 0 0 0 0</pose>
+      <link name="link">
+      <visual name="b"><pose>0 0 0.45 0 0 0</pose><geometry><cylinder><radius>0.3</radius><length>0.9</length></cylinder></geometry><material><ambient>0.7 0.12 0.1 1</ambient><diffuse>0.7 0.12 0.1 1</diffuse></material></visual>
+      <collision name="b_col"><pose>0 0 0.45 0 0 0</pose><geometry><cylinder><radius>0.3</radius><length>0.9</length></cylinder></geometry></collision>
+      <visual name="r"><pose>0 0 0.6 0 0 0</pose><geometry><cylinder><radius>0.31</radius><length>0.06</length></cylinder></geometry><material><ambient>0.92 0.92 0.92 1</ambient><diffuse>0.92 0.92 0.92 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="barrel_3">
+      <static>true</static>
+      <pose>5.5 -1.5 0 0 0 0</pose>
+      <link name="link">
+      <visual name="b"><pose>0 0 0.45 0 0 0</pose><geometry><cylinder><radius>0.3</radius><length>0.9</length></cylinder></geometry><material><ambient>0.1 0.35 0.7 1</ambient><diffuse>0.1 0.35 0.7 1</diffuse></material></visual>
+      <collision name="b_col"><pose>0 0 0.45 0 0 0</pose><geometry><cylinder><radius>0.3</radius><length>0.9</length></cylinder></geometry></collision>
+      <visual name="r"><pose>0 0 0.6 0 0 0</pose><geometry><cylinder><radius>0.31</radius><length>0.06</length></cylinder></geometry><material><ambient>0.92 0.92 0.92 1</ambient><diffuse>0.92 0.92 0.92 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="pillar_1">
+      <static>true</static>
+      <pose>4.0 0.0 0 0 0 0</pose>
+      <link name="link">
+      <visual name="p"><pose>0 0 1.25 0 0 0</pose><geometry><cylinder><radius>0.25</radius><length>2.5</length></cylinder></geometry><material><ambient>0.62 0.62 0.6 1</ambient><diffuse>0.62 0.62 0.6 1</diffuse></material></visual>
+      <collision name="p_col"><pose>0 0 1.25 0 0 0</pose><geometry><cylinder><radius>0.25</radius><length>2.5</length></cylinder></geometry></collision>
+      </link>
+    </model>
+    <model name="pillar_2">
+      <static>true</static>
+      <pose>-3.5 3.0 0 0 0 0</pose>
+      <link name="link">
+      <visual name="p"><pose>0 0 1.25 0 0 0</pose><geometry><cylinder><radius>0.25</radius><length>2.5</length></cylinder></geometry><material><ambient>0.62 0.62 0.6 1</ambient><diffuse>0.62 0.62 0.6 1</diffuse></material></visual>
+      <collision name="p_col"><pose>0 0 1.25 0 0 0</pose><geometry><cylinder><radius>0.25</radius><length>2.5</length></cylinder></geometry></collision>
+      </link>
+    </model>
+    <model name="fence_1">
+      <static>true</static>
+      <pose>13 4.6 0 0 0 0</pose>
+      <link name="link">
+      <visual name="post0"><pose>0.0 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post0_col"><pose>0.0 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="post1"><pose>0.9 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post1_col"><pose>0.9 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="post2"><pose>1.8 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post2_col"><pose>1.8 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="post3"><pose>2.7 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post3_col"><pose>2.7 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="post4"><pose>3.6 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post4_col"><pose>3.6 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="post5"><pose>4.5 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post5_col"><pose>4.5 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="rail1"><pose>2.25 0 0.8 0 0 0</pose><geometry><box><size>5.4 0.04 0.08</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <visual name="rail2"><pose>2.25 0 0.4 0 0 0</pose><geometry><box><size>5.4 0.04 0.08</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="fence_2">
+      <static>true</static>
+      <pose>20 4.6 0 0 0 0</pose>
+      <link name="link">
+      <visual name="post0"><pose>0.0 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post0_col"><pose>0.0 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="post1"><pose>0.9 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post1_col"><pose>0.9 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="post2"><pose>1.8 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post2_col"><pose>1.8 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="post3"><pose>2.7 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post3_col"><pose>2.7 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="post4"><pose>3.6 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post4_col"><pose>3.6 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="post5"><pose>4.5 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="post5_col"><pose>4.5 0 0.5 0 0 0</pose><geometry><box><size>0.08 0.08 1.0</size></box></geometry></collision>
+      <visual name="rail1"><pose>2.25 0 0.8 0 0 0</pose><geometry><box><size>5.4 0.04 0.08</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <visual name="rail2"><pose>2.25 0 0.4 0 0 0</pose><geometry><box><size>5.4 0.04 0.08</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      </link>
+    </model>
+    <!-- Small kiosk -->
+    <model name="kiosk">
+      <static>true</static>
+      <pose>17 -3.6 0 0 0 0</pose>
+      <link name="link">
+      <visual name="walls"><pose>0 0 1.1 0 0 0</pose><geometry><box><size>2.0 1.4 2.2</size></box></geometry><material><ambient>0.85 0.7 0.3 1</ambient><diffuse>0.85 0.7 0.3 1</diffuse></material></visual>
+      <collision name="walls_col"><pose>0 0 1.1 0 0 0</pose><geometry><box><size>2.0 1.4 2.2</size></box></geometry></collision>
+      <visual name="roof"><pose>0 0 2.28 0 0 0</pose><geometry><box><size>2.3 1.7 0.15</size></box></geometry><material><ambient>0.7 0.12 0.1 1</ambient><diffuse>0.7 0.12 0.1 1</diffuse></material></visual>
+      <visual name="win"><pose>0 0.71 1.3 0 0 0</pose><geometry><box><size>1.2 0.02 0.8</size></box></geometry><material><ambient>0.25 0.38 0.55 1</ambient><diffuse>0.25 0.38 0.55 1</diffuse></material></visual>
+      </link>
+    </model>
+    <!-- Bus stop -->
+    <model name="bus_stop">
+      <static>true</static>
+      <pose>24 -3.7 0 0 0 0</pose>
+      <link name="link">
+      <visual name="roof"><pose>0 0 2.4 0 0 0</pose><geometry><box><size>3.0 1.2 0.1</size></box></geometry><material><ambient>0.25 0.27 0.3 1</ambient><diffuse>0.25 0.27 0.3 1</diffuse></material></visual>
+      <visual name="p1"><pose>-1.4 -0.5 1.2 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.25 0.27 0.3 1</ambient><diffuse>0.25 0.27 0.3 1</diffuse></material></visual>
+      <collision name="p1_col"><pose>-1.4 -0.5 1.2 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry></collision>
+      <visual name="p2"><pose>1.4 -0.5 1.2 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.25 0.27 0.3 1</ambient><diffuse>0.25 0.27 0.3 1</diffuse></material></visual>
+      <collision name="p2_col"><pose>1.4 -0.5 1.2 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry></collision>
+      <visual name="back"><pose>0 -0.55 1.3 0 0 0</pose><geometry><box><size>2.8 0.04 1.3</size></box></geometry><material><ambient>0.25 0.38 0.55 1</ambient><diffuse>0.25 0.38 0.55 1</diffuse></material></visual>
+      <visual name="bench"><pose>0 0 0.45 0 0 0</pose><geometry><box><size>1.8 0.4 0.08</size></box></geometry><material><ambient>0.55 0.38 0.2 1</ambient><diffuse>0.55 0.38 0.2 1</diffuse></material></visual>
+      <collision name="bench_col"><pose>0 0 0.45 0 0 0</pose><geometry><box><size>1.8 0.4 0.08</size></box></geometry></collision>
+      </link>
+    </model>
     <model name="car_red">
       <static>true</static>
       <pose>8 -8.6 0 0 0 0</pose>
@@ -414,6 +618,52 @@
           <waypoint><time>8.5</time><pose>15 2.8 1.0 0 0 3.14</pose></waypoint>
           <waypoint><time>16.5</time><pose>7 2.8 1.0 0 0 3.14</pose></waypoint>
           <waypoint><time>17</time><pose>7 2.8 1.0 0 0 0.0</pose></waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
+    <!-- Second man: patrols a big rectangle around the obstacle course -->
+    <actor name="pedestrian_man_2">
+      <skin><filename>https://fuel.gazebosim.org/1.0/Mingfei/models/actor/tip/files/meshes/walk.dae</filename><scale>1.0</scale></skin>
+      <animation name="walk">
+        <filename>https://fuel.gazebosim.org/1.0/Mingfei/models/actor/tip/files/meshes/walk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <loop>true</loop>
+        <delay_start>0.0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="walk" tension="0.6">
+          <waypoint><time>0</time><pose>-1 -4.0 1.0 0 0 0.0</pose></waypoint>
+          <waypoint><time>7</time><pose>6 -4.0 1.0 0 0 0.0</pose></waypoint>
+          <waypoint><time>7.5</time><pose>6 -4.0 1.0 0 0 1.57</pose></waypoint>
+          <waypoint><time>12</time><pose>6 3.0 1.0 0 0 1.57</pose></waypoint>
+          <waypoint><time>12.5</time><pose>6 3.0 1.0 0 0 3.14</pose></waypoint>
+          <waypoint><time>19.5</time><pose>-1 3.0 1.0 0 0 3.14</pose></waypoint>
+          <waypoint><time>20</time><pose>-1 3.0 1.0 0 0 -1.57</pose></waypoint>
+          <waypoint><time>24.5</time><pose>-1 -4.0 1.0 0 0 -1.57</pose></waypoint>
+          <waypoint><time>25</time><pose>-1 -4.0 1.0 0 0 0.0</pose></waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
+    <!-- Second woman: walks along the kerb side -->
+    <actor name="woman_walking_2">
+      <skin><filename>https://fuel.gazebosim.org/1.0/Luca/models/FemaleVisitorWalk/tip/files/meshes/FemaleVisitorWalk.dae</filename><scale>1.0</scale></skin>
+      <animation name="walk">
+        <filename>https://fuel.gazebosim.org/1.0/Luca/models/FemaleVisitorWalk/tip/files/meshes/FemaleVisitorWalk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <loop>true</loop>
+        <delay_start>0.0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="walk" tension="0.6">
+          <waypoint><time>0</time><pose>20 -2.0 1.0 0 0 3.14</pose></waypoint>
+          <waypoint><time>10</time><pose>10 -2.0 1.0 0 0 3.14</pose></waypoint>
+          <waypoint><time>10.5</time><pose>10 -2.0 1.0 0 0 0.0</pose></waypoint>
+          <waypoint><time>20.5</time><pose>20 -2.0 1.0 0 0 0.0</pose></waypoint>
+          <waypoint><time>21</time><pose>20 -2.0 1.0 0 0 3.14</pose></waypoint>
         </trajectory>
       </script>
     </actor>

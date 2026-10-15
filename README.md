@@ -18,10 +18,11 @@ ros2 launch mobile_robot launch_sim.launch.py
 
 # Terminal 2: keyboard (click into this terminal first so it has focus!)
 source ~/dev_ws/install/setup.bash
-ros2 run mobile_robot teleop.sh
+ros2 run mobile_robot teleop_keys.py     # recommended: keeps sending, shows if the controller listens
+# alternative: ros2 run mobile_robot teleop.sh   (stock teleop_twist_keyboard)
 ```
 
-Keys: `i` forward, `,` backward, `j`/`l` turn, `u`/`o` forward + turn, **`k` stop**, `q`/`z` faster/slower.
+Keys (`teleop_keys.py`; the status line shows `controller listening` or `NO CONTROLLER`): `i` forward, `,` backward, `j`/`l` turn, `u`/`o` forward + turn, **`k` stop**, `q`/`z` faster/slower.
 `teleop_twist_keyboard` sends one message per key press; `cmd_vel_timeout: 10.0` in `config/my_controllers.yaml`
 keeps the robot moving after a press until you press `k` (simulation only).
 
