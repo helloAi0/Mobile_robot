@@ -154,11 +154,36 @@ furniture("workbench", 6.5, -5.0, 2.4, 0.8, 0.9, WOOD2)
 furniture("tool_shelf", 7.7, -3.0, 0.4, 2.4, 1.8, METAL)
 model("pillar_1", (3.2, -4.0, 1.25, 0, 0, 0), [part("p", "cyl", (0.25, 2.5), (0, 0, 0, 0, 0, 0), CONC, collide=True)])
 model("pillar_2", (4.8, -4.6, 1.25, 0, 0, 0), [part("p", "cyl", (0.25, 2.5), (0, 0, 0, 0, 0, 0), CONC, collide=True)])
-model("ramp_ws", (1.2, -2.3, 0, 0, 0, 0), [part("slope", "box", (2.0, 1.2, 0.06), (0, 0, 0.17, 0, -0.17, 0), (0.55, 0.5, 0.4), collide=True),
-                                           part("top", "box", (1.0, 1.2, 0.06), (1.5, 0, 0.35, 0, 0, 0), (0.55, 0.5, 0.4), collide=True),
-                                           part("down", "box", (2.0, 1.2, 0.06), (2.97, 0, 0.17, 0, 0.17, 0), (0.55, 0.5, 0.4), collide=True)],
-      "Small ramp (about 10 degrees): up, flat top, down")
+# Ramp: 7 degrees, 2.4 m long slopes, flat top at 0.25 m. The low ends are buried in the floor so there is NO lip
+# (a 5 cm wheel cannot climb a vertical edge: an earlier version with a lip trapped the robot).
+RAMP_C = (0.55, 0.5, 0.4)
+model("ramp_ws", (1.5, -2.3, 0, 0, 0, 0), [
+    part("slope", "box", (2.4, 1.2, 0.06), (0, 0, 0.077, 0, -0.12, 0), RAMP_C, collide=True),
+    part("top", "box", (1.0, 1.2, 0.06), (1.69, 0, 0.22, 0, 0, 0), RAMP_C, collide=True),
+    part("down", "box", (2.4, 1.2, 0.06), (3.38, 0, 0.077, 0, 0.12, 0), RAMP_C, collide=True)],
+      "Gentle ramp (7 degrees): up, flat top, down. Drive over it to show the physics.")
 
+# ------------------------------------------------------------------ decoration (visual only, no collision)
+def rug(name, x, y, sx, sy, color):
+    model(name, (x, y, 0.012, 0, 0, 0), [part("r", "box", (sx, sy, 0.012), (0, 0, 0, 0, 0, 0), color)])
+
+
+rug("rug_living", -5.3, 3.3, 2.8, 1.8, (0.60, 0.25, 0.25))
+rug("rug_dining", 0, 3.3, 2.6, 1.8, (0.30, 0.40, 0.55))
+rug("rug_bedroom", 6.0, 4.0, 2.4, 1.6, (0.45, 0.35, 0.50))
+rug("rug_corridor", -2.0, 0, 3.0, 0.9, (0.55, 0.20, 0.20))
+
+
+def painting(name, x, y, yaw, w=1.0, h=0.7, color=(0.25, 0.45, 0.65)):
+    model(name, (x, y, 1.55, 0, 0, yaw), [part("frame", "box", (w + 0.08, 0.03, h + 0.08), (0, 0, 0, 0, 0, 0), TRIM),
+                                          part("img", "box", (w, 0.035, h), (0, 0, 0, 0, 0, 0), color)])
+
+
+painting("art_1", -6.0, 5.4, 0.0)
+painting("art_2", 1.0, 5.4, 0.0, color=(0.65, 0.5, 0.25))
+painting("art_3", 5.0, 5.4, 0.0, color=(0.3, 0.55, 0.4))
+painting("art_4", 3.0, -5.4, 0.0, color=(0.6, 0.3, 0.3))
+painting("art_5", -3.0, -5.4, 0.0, color=(0.3, 0.35, 0.6))
 # ------------------------------------------------------------------ free bodies (real physics)
 def crate(name, x, y, z, size=0.4, yaw=0.0, mass=1.0, color=CARD):
     model(name, (x, y, z, 0, 0, yaw), [part("c", "box", (size, size, size), (0, 0, 0, 0, 0, 0), color, collide=True)],

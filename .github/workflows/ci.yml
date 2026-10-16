@@ -1,0 +1,46 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit:
+    name: Unit tests (plain Python, no ROS)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install pytest pyyaml numpy xacro
+      - run: python -m pytest -q test
+
+  ros-build:
+    name: ROS 2 Jazzy build + launch files + integration (mock hardware)
+    runs-on: ubuntu-24.04
+    container: ros:jazzy-ros-base
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: ws/src/mobile_robot }
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ros-jazzy-ros-gz ros-jazzy-gz-ros2-control ros-jazzy-ros2-control ros-jazzy-ros2-controllers \
+            ros-jazzy-xacro ros-jazzy-robot-state-publisher ros-jazzy-rviz2 ros-jazzy-slam-toolbox \
+            ros-jazzy-navigation2 ros-jazzy-nav2-bringup ros-jazzy-ros2controlcli \
+            python3-pytest python3-numpy python3-yaml python3-colcon-common-extensions
+      - name: Build
+        working-directory: ws
+        run: . /opt/ros/jazzy/setup.sh && colcon build --symlink-install
+      - name: Unit tests through colcon
+        working-directory: ws
+        run: . /opt/ros/jazzy/setup.sh && colcon test --packages-select mobile_robot && colcon test-result --verbose
+      - name: Launch files load
+        working-directory: ws
+        run: |
+          . /opt/ros/jazzy/setup.sh && . install/setup.sh
+          for f in launch_sim autonomy hardware; do ros2 launch mobile_robot $f.launch.py --show-args > /dev/null; done
+      - name: Integration test (mock hardware, no simulator)
+        working-directory: ws
+        continue-on-error: true      # remove this line once it has run green on your repository
+        run: . /opt/ros/jazzy/setup.sh && . install/setup.sh && bash src/mobile_robot/test/integration_mock.sh

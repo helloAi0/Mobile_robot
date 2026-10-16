@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """Keyboard driver with live feedback.   ros2 run mobile_robot teleop_keys.py
 
-  i forward    , backward    j turn left    l turn right    u / o forward + turn    k or SPACE stop
-  q / z  faster / slower        a  switch AUTONOMOUS mode on/off        Ctrl-C quit
+   FORWARD      i   or   w   or   UP arrow        (u / o = forward + turn left / right)
+   BACKWARD     m   or   ,   or   s   or   DOWN arrow     (always straight back)
+   TURN LEFT    j   or   a   or   LEFT arrow            (turns on the spot)
+   TURN RIGHT   l   or   d   or   RIGHT arrow
+   STOP         k   or   SPACE   or   x
 
-The robot keeps going until you press k. While you drive, the keyboard has priority over autonomous mode and
-Nav2; a second after you press k they take over again (if they are running).
-Sends /cmd_vel_teleop to cmd_vel_mux.py, which feeds the drive controller.
+   e / q : slower / faster        p : autopilot on/off (wander + avoid)        Ctrl-C : quit
+
+The robot keeps going until you press
+k, SPACE or x. While you drive, the keyboard has priority over autopilot and Nav2; one second after you stop
+they take over again (if they are running). The safety layer in cmd_vel_mux.py slows the robot down in front of
+obstacles; backing away is always possible.
 """
+import os
 import select
 import sys
 import termios
@@ -17,9 +24,28 @@ import tty
 import rclpy
 from geometry_msgs.msg import Twist
 from rclpy.node import Node
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 
-MOVES = {'i': (1, 0), ',': (-1, 0), 'j': (0, 1), 'l': (0, -1), 'u': (1, 1), 'o': (1, -1), 'm': (-1, 1), '.': (-1, -1)}
+# key -> (linear sign, angular sign)
+MOVES = {
+    'i': (1, 0), 'u': (1, 1), 'o': (1, -1), 'j': (0, 1), 'l': (0, -1),
+    'm': (-1, 0), ',': (-1, 0), '.': (-1, 0),
+    'w': (1, 0), 'a': (0, 1), 'd': (0, -1), 's': (-1, 0),
+    '\x1b[A': (1, 0), '\x1b[B': (-1, 0), '\x1b[C': (0, -1), '\x1b[D': (0, 1),
+}
+STOP_KEYS = ('k', ' ', 'x')
+
+
+def describe(lin, ang):
+    """Plain-words description of what the robot is being told to do."""
+    if lin == 0 and ang == 0:
+        return 'STOPPED'
+    if lin == 0:
+        return 'TURNING LEFT (on the spot)' if ang > 0 else 'TURNING RIGHT (on the spot)'
+    way = 'FORWARD' if lin > 0 else 'BACKWARD'
+    if ang == 0:
+        return way
+    return f'{way} + {"left" if ang > 0 else "right"} arc'
 
 
 class TeleopKeys(Node):
@@ -27,11 +53,16 @@ class TeleopKeys(Node):
         super().__init__('teleop_keys')
         self.pub = self.create_publisher(Twist, '/cmd_vel_teleop', 10)
         self.mode_pub = self.create_publisher(Bool, '/auto_mode', 10)
+        self.create_subscription(String, '/mux_status', self.on_status, 10)
+        self.mux_status = ''
         self.lin = self.ang = 0.0
-        self.speed, self.turn = 0.4, 1.0
+        self.speed, self.turn = 0.35, 1.0
         self.send_until = 0.0         # keep sending (also zeros) until this time, then stay silent
         self.auto = False
         self.create_timer(0.05, self.send)
+
+    def on_status(self, msg):
+        self.mux_status = msg.data
 
     def send(self):
         if time.monotonic() > self.send_until:
@@ -50,10 +81,24 @@ class TeleopKeys(Node):
         self.command(0.0, 0.0)
 
     def status(self):
-        n = self.pub.get_subscription_count()
-        link = 'mux listening' if n else 'NO cmd_vel_mux (is the simulation running?)'
-        return (f'\r\x1b[K[{link}] [auto: {"ON" if self.auto else "off"}]  v={self.lin:+.2f} m/s  '
-                f'w={self.ang:+.2f} rad/s  speed {self.speed:.2f}/{self.turn:.2f}')
+        link = 'mux OK' if self.pub.get_subscription_count() else 'NO cmd_vel_mux: is the simulation running?'
+        extra = f' | {self.mux_status}' if self.mux_status else ''
+        return (f'\r\x1b[K[{link}{extra}] [autopilot {"ON" if self.auto else "off"}] '
+                f'{describe(self.lin, self.ang)}  v={self.lin:+.2f} m/s w={self.ang:+.2f} rad/s  (speed {self.speed:.2f})')
+
+
+def _byte():
+    return os.read(sys.stdin.fileno(), 1).decode(errors='ignore')    # unbuffered: select() on the fd stays correct
+
+
+def read_key():
+    k = _byte()
+    if k == '\x1b':                                   # arrow keys arrive as ESC [ A..D
+        if select.select([sys.stdin], [], [], 0.02)[0]:
+            k += _byte()
+            if select.select([sys.stdin], [], [], 0.02)[0]:
+                k += _byte()
+    return k
 
 
 def main():
@@ -69,31 +114,39 @@ def main():
         while rclpy.ok():
             rclpy.spin_once(node, timeout_sec=0.05)
             if select.select([sys.stdin], [], [], 0)[0]:
-                k = sys.stdin.read(1)
+                k = read_key()
                 if k in MOVES:
                     node.command(MOVES[k][0] * node.speed, MOVES[k][1] * node.turn)
-                elif k in ('k', ' '):
+                elif k in STOP_KEYS:
                     node.command(0.0, 0.0)
-                elif k == 'a':
+                elif k == 'p':
                     node.toggle_auto()
                 elif k == 'q':
-                    node.speed *= 1.2
-                    node.turn *= 1.2
-                elif k == 'z':
+                    node.speed = min(node.speed * 1.2, 0.6)
+                    node.turn = min(node.turn * 1.2, 2.0)
+                elif k == 'e':
                     node.speed /= 1.2
                     node.turn /= 1.2
                 elif k == '\x03':
                     break
             sys.stdout.write(node.status())
             sys.stdout.flush()
+    except KeyboardInterrupt:
+        pass
     finally:
-        node.command(0.0, 0.0)
-        node.send()
+        try:
+            node.command(0.0, 0.0)
+            node.send()                                # last word: stop
+        except Exception:                              # context may already be shut down by Ctrl-C
+            pass
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old)
-        node.destroy_node()
-        if rclpy.ok():
-            rclpy.shutdown()
-        print()
+        try:
+            node.destroy_node()
+            if rclpy.ok():
+                rclpy.shutdown()
+        except Exception:
+            pass
+        print('\nstopped.')
 
 
 if __name__ == '__main__':

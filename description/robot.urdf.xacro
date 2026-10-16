@@ -1,9 +1,21 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="robot">
 
+    <!-- hardware = sim   : Gazebo (gz_ros2_control)                      -> gazebo_control.xacro
+         hardware = mock  : ros2_control mock components, no Gazebo       -> hardware_control.xacro
+         hardware = real  : your motor driver plugin (hw_plugin:=...)     -> hardware_control.xacro
+         Set by the launch files (launch_sim: sim, hardware.launch.py: mock/real). -->
+    <xacro:arg name="hardware" default="sim"/>
+    <xacro:property name="hardware" value="$(arg hardware)"/>
+
     <xacro:include filename="robot_core.xacro" />
 
-    <xacro:include filename="gazebo_control.xacro" />
+    <xacro:if value="${hardware == 'sim'}">
+        <xacro:include filename="gazebo_control.xacro" />
+    </xacro:if>
+    <xacro:unless value="${hardware == 'sim'}">
+        <xacro:include filename="hardware_control.xacro" />
+    </xacro:unless>
 
     <xacro:include filename="lidar.xacro" />
 

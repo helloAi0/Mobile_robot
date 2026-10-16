@@ -22,14 +22,8 @@ find_package(ament_cmake REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(unit_tests test TIMEOUT 120)
 endif()
 
 install(
@@ -38,7 +32,7 @@ install(
 )
 
 install(
-  PROGRAMS scripts/object_detector.py scripts/cmd_vel_mux.py scripts/auto_explore.py scripts/teleop.sh scripts/diagnose.sh scripts/teleop_keys.py scripts/cloud_filter.py scripts/tune_actor_height.py scripts/save_map.sh
+  PROGRAMS scripts/object_detector.py scripts/cmd_vel_mux.py scripts/auto_explore.py scripts/teleop.sh scripts/diagnose.sh scripts/teleop_keys.py scripts/cloud_filter.py scripts/tune_actor_height.py scripts/save_map.sh scripts/estop.sh scripts/install_deps.sh
   DESTINATION lib/${PROJECT_NAME}
 )
 

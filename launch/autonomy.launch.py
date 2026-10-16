@@ -26,7 +26,8 @@ def _setup(context):
 
     # who drives: keyboard > Nav2 > autonomous wandering -> /diff_cont/cmd_vel
     actions.append(Node(package='mobile_robot', executable='cmd_vel_mux.py', output='screen',
-                        parameters=[{'use_sim_time': sim}]))
+                        parameters=[{'use_sim_time': sim,
+                                     'require_scan': LaunchConfiguration('require_scan').perform(context).lower() == 'true'}]))
 
     if LaunchConfiguration('slam').perform(context).lower() == 'true':
         try:
@@ -58,6 +59,8 @@ def _setup(context):
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value='false'),
+        DeclareLaunchArgument('require_scan', default_value='true',
+                              description='safety layer: no forward motion without a fresh /scan (set false only without a lidar)'),
         DeclareLaunchArgument('slam', default_value='true', description='build a map with slam_toolbox'),
         DeclareLaunchArgument('nav2', default_value='false', description='Nav2: drive to a goal clicked in RViz'),
         DeclareLaunchArgument('auto', default_value='false', description='start in autonomous wandering mode'),

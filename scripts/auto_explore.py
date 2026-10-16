@@ -53,15 +53,41 @@ class Explorer:
         self.extra = 0.0
         self.rng = rng or random.Random()
         self.message = ''
+        self.ref = None              # (time, x, y) when progress was last measured
 
-    def step(self, ranges, angle_min, inc, now):
-        """Returns (linear, angular). self.message is set when the state changes."""
+    def rear_clear(self, ranges, angle_min, inc):
+        d = math.radians
+        back = min(sector_min(ranges, angle_min, inc, d(140), d(180)), sector_min(ranges, angle_min, inc, -d(180), -d(140)))
+        return back > 0.4
+
+    def step(self, ranges, angle_min, inc, now, pos=None):
+        """Returns (linear, angular). self.message is set when the state changes.
+        pos = (x, y) from odometry (optional): used to notice that the robot is stuck although it is told to drive."""
         d = math.radians
         front = sector_min(ranges, angle_min, inc, -d(35), d(35))
         near = sector_min(ranges, angle_min, inc, -d(60), d(60))
         left = sector_min(ranges, angle_min, inc, d(20), d(90))
         right = sector_min(ranges, angle_min, inc, -d(90), -d(20))
         self.message = ''
+        if self.state == 'BACKUP':
+            if now >= self.until or not self.rear_clear(ranges, angle_min, inc):
+                self.state, self.turn_started = 'TURN', now
+                return 0.0, 0.0
+            return -0.15, 0.0
+        if self.state == 'FORWARD' and pos is not None:
+            if self.ref is None:
+                self.ref = (now, pos[0], pos[1])
+            elif now - self.ref[0] > 4.0:
+                moved = math.hypot(pos[0] - self.ref[1], pos[1] - self.ref[2])
+                self.ref = (now, pos[0], pos[1])
+                if moved < 0.06:
+                    self.state, self.until = 'BACKUP', now + 1.2
+                    self.turn_dir = self.rng.choice([-1, 1])
+                    self.extra = self.rng.uniform(0.5, 1.2)
+                    self.message = 'no progress for 4 s (stuck?): backing up, then turning'
+                    return 0.0, 0.0
+        else:
+            self.ref = None
         if self.state == 'FORWARD':
             if front < STOP_DIST or near < 0.30:
                 self.state, self.until = 'STOP', now + 0.6
@@ -98,6 +124,7 @@ def main():
     from geometry_msgs.msg import Twist
     from rclpy.node import Node
     from rclpy.qos import qos_profile_sensor_data
+    from nav_msgs.msg import Odometry
     from sensor_msgs.msg import LaserScan
     from std_msgs.msg import Bool
 
@@ -108,7 +135,9 @@ def main():
             self.enabled = self.get_parameter('enabled').value
             self.ex = Explorer()
             self.scan = None
+            self.pos = None
             self.scan_time = 0.0
+            self.create_subscription(Odometry, '/odom', self.on_odom, 10)
             self.pub = self.create_publisher(Twist, '/cmd_vel_auto', 10)
             self.create_subscription(LaserScan, '/scan', self.on_scan, qos_profile_sensor_data)
             self.create_subscription(Bool, '/auto_mode', self.on_mode, 10)
@@ -122,6 +151,9 @@ def main():
                 self.ex = Explorer()
                 self.get_logger().info(f'auto mode {"ON" if self.enabled else "OFF"}')
 
+        def on_odom(self, msg):
+            self.pos = (msg.pose.pose.position.x, msg.pose.pose.position.y)
+
         def on_scan(self, msg):
             self.scan = msg
             self.scan_time = self.get_clock().now().nanoseconds * 1e-9
@@ -132,7 +164,7 @@ def main():
             now = self.get_clock().now().nanoseconds * 1e-9
             t = Twist()
             if now - self.scan_time < 1.0:     # no fresh scan -> do not drive blind
-                lin, ang = self.ex.step(list(self.scan.ranges), self.scan.angle_min, self.scan.angle_increment, now)
+                lin, ang = self.ex.step(list(self.scan.ranges), self.scan.angle_min, self.scan.angle_increment, now, self.pos)
                 t.linear.x, t.angular.z = float(lin), float(ang)
                 if self.ex.message:
                     self.get_logger().info(self.ex.message)

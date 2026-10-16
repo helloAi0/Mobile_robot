@@ -448,17 +448,85 @@
       <collision name="p_col"><pose>0 0 0 0 0 0</pose><geometry><cylinder><radius>0.25</radius><length>2.5</length></cylinder></geometry></collision>
       </link>
     </model>
-    <!-- Small ramp (about 10 degrees): up, flat top, down -->
+    <!-- Gentle ramp (7 degrees): up, flat top, down. Drive over it to show the physics. -->
     <model name="ramp_ws">
       <static>true</static>
-      <pose>1.2 -2.3 0 0 0 0</pose>
+      <pose>1.5 -2.3 0 0 0 0</pose>
       <link name="link">
-      <visual name="slope"><pose>0 0 0.17 0 -0.17 0</pose><geometry><box><size>2.0 1.2 0.06</size></box></geometry><material><ambient>0.55 0.5 0.4 1</ambient><diffuse>0.55 0.5 0.4 1</diffuse></material></visual>
-      <collision name="slope_col"><pose>0 0 0.17 0 -0.17 0</pose><geometry><box><size>2.0 1.2 0.06</size></box></geometry></collision>
-      <visual name="top"><pose>1.5 0 0.35 0 0 0</pose><geometry><box><size>1.0 1.2 0.06</size></box></geometry><material><ambient>0.55 0.5 0.4 1</ambient><diffuse>0.55 0.5 0.4 1</diffuse></material></visual>
-      <collision name="top_col"><pose>1.5 0 0.35 0 0 0</pose><geometry><box><size>1.0 1.2 0.06</size></box></geometry></collision>
-      <visual name="down"><pose>2.97 0 0.17 0 0.17 0</pose><geometry><box><size>2.0 1.2 0.06</size></box></geometry><material><ambient>0.55 0.5 0.4 1</ambient><diffuse>0.55 0.5 0.4 1</diffuse></material></visual>
-      <collision name="down_col"><pose>2.97 0 0.17 0 0.17 0</pose><geometry><box><size>2.0 1.2 0.06</size></box></geometry></collision>
+      <visual name="slope"><pose>0 0 0.077 0 -0.12 0</pose><geometry><box><size>2.4 1.2 0.06</size></box></geometry><material><ambient>0.55 0.5 0.4 1</ambient><diffuse>0.55 0.5 0.4 1</diffuse></material></visual>
+      <collision name="slope_col"><pose>0 0 0.077 0 -0.12 0</pose><geometry><box><size>2.4 1.2 0.06</size></box></geometry></collision>
+      <visual name="top"><pose>1.69 0 0.22 0 0 0</pose><geometry><box><size>1.0 1.2 0.06</size></box></geometry><material><ambient>0.55 0.5 0.4 1</ambient><diffuse>0.55 0.5 0.4 1</diffuse></material></visual>
+      <collision name="top_col"><pose>1.69 0 0.22 0 0 0</pose><geometry><box><size>1.0 1.2 0.06</size></box></geometry></collision>
+      <visual name="down"><pose>3.38 0 0.077 0 0.12 0</pose><geometry><box><size>2.4 1.2 0.06</size></box></geometry><material><ambient>0.55 0.5 0.4 1</ambient><diffuse>0.55 0.5 0.4 1</diffuse></material></visual>
+      <collision name="down_col"><pose>3.38 0 0.077 0 0.12 0</pose><geometry><box><size>2.4 1.2 0.06</size></box></geometry></collision>
+      </link>
+    </model>
+    <model name="rug_living">
+      <static>true</static>
+      <pose>-5.3 3.3 0.012 0 0 0</pose>
+      <link name="link">
+      <visual name="r"><pose>0 0 0 0 0 0</pose><geometry><box><size>2.8 1.8 0.012</size></box></geometry><material><ambient>0.6 0.25 0.25 1</ambient><diffuse>0.6 0.25 0.25 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rug_dining">
+      <static>true</static>
+      <pose>0 3.3 0.012 0 0 0</pose>
+      <link name="link">
+      <visual name="r"><pose>0 0 0 0 0 0</pose><geometry><box><size>2.6 1.8 0.012</size></box></geometry><material><ambient>0.3 0.4 0.55 1</ambient><diffuse>0.3 0.4 0.55 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rug_bedroom">
+      <static>true</static>
+      <pose>6.0 4.0 0.012 0 0 0</pose>
+      <link name="link">
+      <visual name="r"><pose>0 0 0 0 0 0</pose><geometry><box><size>2.4 1.6 0.012</size></box></geometry><material><ambient>0.45 0.35 0.5 1</ambient><diffuse>0.45 0.35 0.5 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rug_corridor">
+      <static>true</static>
+      <pose>-2.0 0 0.012 0 0 0</pose>
+      <link name="link">
+      <visual name="r"><pose>0 0 0 0 0 0</pose><geometry><box><size>3.0 0.9 0.012</size></box></geometry><material><ambient>0.55 0.2 0.2 1</ambient><diffuse>0.55 0.2 0.2 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="art_1">
+      <static>true</static>
+      <pose>-6.0 5.4 1.55 0 0 0.0</pose>
+      <link name="link">
+      <visual name="frame"><pose>0 0 0 0 0 0</pose><geometry><box><size>1.08 0.03 0.7799999999999999</size></box></geometry><material><ambient>0.35 0.3 0.25 1</ambient><diffuse>0.35 0.3 0.25 1</diffuse></material></visual>
+      <visual name="img"><pose>0 0 0 0 0 0</pose><geometry><box><size>1.0 0.035 0.7</size></box></geometry><material><ambient>0.25 0.45 0.65 1</ambient><diffuse>0.25 0.45 0.65 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="art_2">
+      <static>true</static>
+      <pose>1.0 5.4 1.55 0 0 0.0</pose>
+      <link name="link">
+      <visual name="frame"><pose>0 0 0 0 0 0</pose><geometry><box><size>1.08 0.03 0.7799999999999999</size></box></geometry><material><ambient>0.35 0.3 0.25 1</ambient><diffuse>0.35 0.3 0.25 1</diffuse></material></visual>
+      <visual name="img"><pose>0 0 0 0 0 0</pose><geometry><box><size>1.0 0.035 0.7</size></box></geometry><material><ambient>0.65 0.5 0.25 1</ambient><diffuse>0.65 0.5 0.25 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="art_3">
+      <static>true</static>
+      <pose>5.0 5.4 1.55 0 0 0.0</pose>
+      <link name="link">
+      <visual name="frame"><pose>0 0 0 0 0 0</pose><geometry><box><size>1.08 0.03 0.7799999999999999</size></box></geometry><material><ambient>0.35 0.3 0.25 1</ambient><diffuse>0.35 0.3 0.25 1</diffuse></material></visual>
+      <visual name="img"><pose>0 0 0 0 0 0</pose><geometry><box><size>1.0 0.035 0.7</size></box></geometry><material><ambient>0.3 0.55 0.4 1</ambient><diffuse>0.3 0.55 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="art_4">
+      <static>true</static>
+      <pose>3.0 -5.4 1.55 0 0 0.0</pose>
+      <link name="link">
+      <visual name="frame"><pose>0 0 0 0 0 0</pose><geometry><box><size>1.08 0.03 0.7799999999999999</size></box></geometry><material><ambient>0.35 0.3 0.25 1</ambient><diffuse>0.35 0.3 0.25 1</diffuse></material></visual>
+      <visual name="img"><pose>0 0 0 0 0 0</pose><geometry><box><size>1.0 0.035 0.7</size></box></geometry><material><ambient>0.6 0.3 0.3 1</ambient><diffuse>0.6 0.3 0.3 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="art_5">
+      <static>true</static>
+      <pose>-3.0 -5.4 1.55 0 0 0.0</pose>
+      <link name="link">
+      <visual name="frame"><pose>0 0 0 0 0 0</pose><geometry><box><size>1.08 0.03 0.7799999999999999</size></box></geometry><material><ambient>0.35 0.3 0.25 1</ambient><diffuse>0.35 0.3 0.25 1</diffuse></material></visual>
+      <visual name="img"><pose>0 0 0 0 0 0</pose><geometry><box><size>1.0 0.035 0.7</size></box></geometry><material><ambient>0.3 0.35 0.6 1</ambient><diffuse>0.3 0.35 0.6 1</diffuse></material></visual>
       </link>
     </model>
     <!-- Free-standing box: the robot can push it -->
