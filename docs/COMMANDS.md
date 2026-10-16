@@ -111,3 +111,4 @@ python3 tools/make_house_world.py        # worlds/house_world.sdf
 python3 tools/make_street_world.py       # worlds/street_world.sdf
 python3 tools/make_actor_test_world.py   # worlds/actor_height_test.sdf
 ```
+- `ros2 run mobile_robot metrics_logger.py` : run metrics (CSV + summary on Ctrl-C)
