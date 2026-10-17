@@ -13,7 +13,7 @@ live SLAM mapping, Nav2 goal navigation, an autonomous obstacle-avoiding mode th
 | **Safety** | `cmd_vel_mux`: e-stop, front/rear obstacle guard, no-lidar = no motion, speed + acceleration limits, command watchdogs |
 | **Perception views** | magenta lidar over the map, floor-free coloured 3D cloud, colour + depth image, object markers with distance |
 | **Hardware path** | `hardware.launch.py` (mock or real motor driver), systemd + udev, Docker, CI with tests |
-| **Quality** | 79 unit tests (safety logic, autopilot, filters, worlds, robot description in sim/mock/real), CI, integration test on mock hardware |
+| **Quality** | 92 unit tests (safety logic, autopilot, filters, worlds, robot description in sim/mock/real), CI, integration test on mock hardware |
 
 ## Quick start
 ```bash
@@ -41,7 +41,7 @@ Written in this repo:
 - `cloud_filter.py`: floor-removing point cloud filter.
 - One URDF for sim, mock and real hardware (ros2_control), with a mock bring-up that needs no robot.
 - `metrics_logger.py`: measures a run (distance, explored area, min clearance, stops) and writes a CSV.
-- 79 unit tests, CI, Docker, systemd/udev deployment files.
+- 92 unit tests, CI, Docker, systemd/udev deployment files.
 
 Honest scope: validated in simulation and unit tests; not yet validated on physical hardware.
 
@@ -65,7 +65,7 @@ ros2 run mobile_robot_bringup metrics_logger.py --ros-args -p csv:=$HOME/run1.cs
 ## Repository layout
 ```
 mobile_robot_description/   urdf/ (xacro: chassis, suspension, caster, sensors, ros2_control), meshes/ (visual), tools/ (inertia + mesh generators)
-mobile_robot_gazebo/        worlds/ (house, street, calibration), launch/gazebo.launch.py, scripts/ (scan_degrader, tune_actor_height), tools/ (world generators), config/gui.config
+mobile_robot_gazebo/        worlds/ (house, street, calibration), models/ (textured props from osrf/gazebo_models, CC BY 3.0; docs/ASSETS.md), launch/gazebo.launch.py, scripts/ (scan_degrader, tune_actor_height), tools/ (world generators), config/gui.config
 mobile_robot_bringup/       launch/ (launch_sim, hardware, autonomy), config/ (controllers, slam), rviz/, scripts/ (cmd_vel_mux, auto_explore, teleop_keys, cloud_filter, estop, metrics, ...), test/ (pytest)
 deploy/ (systemd, udev)  docs/  Dockerfile  Makefile  .github/workflows/ci.yml
 ```

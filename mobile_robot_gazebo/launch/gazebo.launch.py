@@ -31,6 +31,9 @@ def generate_launch_description():
     # package://mobile_robot_description/meshes/... in the URDF is found through this path (the parent of share/<pkg>)
     resources = AppendEnvironmentVariable('GZ_SIM_RESOURCE_PATH', os.path.dirname(desc_share))
 
+    # model://<name> in the worlds (textured props imported from osrf/gazebo_models) is found through this path
+    models = AppendEnvironmentVariable('GZ_SIM_RESOURCE_PATH', os.path.join(gz_share, 'models'))
+
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(desc_share, 'launch', 'rsp.launch.py')),
         launch_arguments={'use_sim_time': 'true', 'hardware': 'sim'}.items())
@@ -76,4 +79,4 @@ def generate_launch_description():
     joint_broad = Node(package='controller_manager', executable='spawner', output='screen',
                        arguments=['joint_broad', '--controller-manager-timeout', '120'])
 
-    return LaunchDescription(args + [resources, rsp, gazebo, bridge, scan_degrader, spawn, diff_drive, joint_broad])
+    return LaunchDescription(args + [resources, models, rsp, gazebo, bridge, scan_degrader, spawn, diff_drive, joint_broad])

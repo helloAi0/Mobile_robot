@@ -92,7 +92,7 @@ sudo bash deploy/install_service.sh && sudo systemctl enable --now mobile_robot 
 
 ## Tests
 ```bash
-make test                                          # 79 unit tests, plain python, no ROS needed
+make test                                          # 92 unit tests, plain python, no ROS needed
 cd ~/dev_ws && colcon test --packages-select mobile_robot_description mobile_robot_gazebo mobile_robot_bringup && colcon test-result --verbose
 bash ~/dev_ws/src/mobile_robot/mobile_robot_bringup/test/integration_mock.sh        # mock stack: controllers, motion, e-stop (needs a built workspace)
 ```
