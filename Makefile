@@ -14,26 +14,26 @@ help:
 	@echo "make keys     keyboard teleop     make estop / make release   emergency stop"
 	@echo "make test     unit tests (no ROS needed)"
 deps:
-	bash scripts/install_deps.sh
+	bash mobile_robot_bringup/scripts/install_deps.sh
 build:
 	cd $(WS) && source /opt/ros/jazzy/setup.bash && colcon build --symlink-install
 sim:
-	bash -c '$(SRC) && ros2 launch mobile_robot launch_sim.launch.py'
+	bash -c '$(SRC) && ros2 launch mobile_robot_bringup launch_sim.launch.py'
 auto:
-	bash -c '$(SRC) && ros2 launch mobile_robot launch_sim.launch.py auto:=true'
+	bash -c '$(SRC) && ros2 launch mobile_robot_bringup launch_sim.launch.py auto:=true'
 nav:
-	bash -c '$(SRC) && ros2 launch mobile_robot launch_sim.launch.py nav2:=true'
+	bash -c '$(SRC) && ros2 launch mobile_robot_bringup launch_sim.launch.py nav2:=true'
 headless:
-	bash -c '$(SRC) && ros2 launch mobile_robot launch_sim.launch.py gui:=false'
+	bash -c '$(SRC) && ros2 launch mobile_robot_bringup launch_sim.launch.py gui:=false'
 mock:
-	bash -c '$(SRC) && ros2 launch mobile_robot hardware.launch.py slam:=false'
+	bash -c '$(SRC) && ros2 launch mobile_robot_bringup hardware.launch.py slam:=false'
 keys:
-	bash -c '$(SRC) && ros2 run mobile_robot teleop_keys.py'
+	bash -c '$(SRC) && ros2 run mobile_robot_bringup teleop_keys.py'
 estop:
-	bash -c '$(SRC) && ros2 run mobile_robot estop.sh'
+	bash -c '$(SRC) && ros2 run mobile_robot_bringup estop.sh'
 release:
-	bash -c '$(SRC) && ros2 run mobile_robot estop.sh release'
+	bash -c '$(SRC) && ros2 run mobile_robot_bringup estop.sh release'
 test pytest:
-	python3 -m pytest -q test
+	python3 -m pytest -q mobile_robot_bringup/test
 clean-sim:
 	-pkill -f "gz sim"; pkill -f ruby; true

@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
       - run: pip install pytest pyyaml numpy xacro
-      - run: python -m pytest -q test
+      - run: python -m pytest -q mobile_robot_bringup/test
 
   ros-build:
     name: ROS 2 Jazzy build + launch files + integration (mock hardware)
@@ -34,13 +34,13 @@ jobs:
         run: . /opt/ros/jazzy/setup.sh && colcon build --symlink-install
       - name: Unit tests through colcon
         working-directory: ws
-        run: . /opt/ros/jazzy/setup.sh && colcon test --packages-select mobile_robot && colcon test-result --verbose
+        run: . /opt/ros/jazzy/setup.sh && colcon test --packages-select mobile_robot_description mobile_robot_gazebo mobile_robot_bringup && colcon test-result --verbose
       - name: Launch files load
         working-directory: ws
         run: |
           . /opt/ros/jazzy/setup.sh && . install/setup.sh
-          for f in launch_sim autonomy hardware; do ros2 launch mobile_robot $f.launch.py --show-args > /dev/null; done
+          for f in launch_sim autonomy hardware; do ros2 launch mobile_robot_bringup $f.launch.py --show-args > /dev/null; done
       - name: Integration test (mock hardware, no simulator)
         working-directory: ws
         continue-on-error: true      # remove this line once it has run green on your repository
-        run: . /opt/ros/jazzy/setup.sh && . install/setup.sh && bash src/mobile_robot/test/integration_mock.sh
+        run: . /opt/ros/jazzy/setup.sh && . install/setup.sh && bash src/mobile_robot/mobile_robot_bringup/test/integration_mock.sh

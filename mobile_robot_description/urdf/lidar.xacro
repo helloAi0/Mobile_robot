@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!-- 2D lidar modelled on an RPLidar A1M8: 12 m, 8000 samples/s -> 720 samples at 10 Hz, ~1 % range noise.
+     It sits on the upper deck. The two rear pillars cross its scan plane: they are part of the visual mesh, so they
+     really block the beam behind them (blind wedges at +-137 deg). Their own hits (0.17 m) would look like phantom
+     obstacles, so scan_degrader.py masks those sectors exactly like a laser_filters angular filter does on hardware.
+     Gazebo publishes /scan_raw; scan_degrader.py adds dropouts + slow range-bias drift and publishes /scan. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <joint name="laser_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="laser_frame"/>
+        <origin xyz="0.122 0 0.212" rpy="0 0 0"/>
+    </joint>
+
+    <link name="laser_frame">
+        <visual>
+            <geometry><mesh filename="${mesh}/laser.stl"/></geometry>
+            <material name="lidar_grey"/>
+        </visual>
+        <collision>
+            <geometry><cylinder radius="0.048" length="0.04"/></geometry>
+        </collision>
+        <xacro:inertial_laser/>
+    </link>
+
+    <gazebo reference="laser_frame">
+        <sensor name="laser" type="gpu_lidar">
+            <pose>0 0 0 0 0 0</pose>
+            <visualize>false</visualize>
+            <update_rate>10</update_rate>
+            <always_on>true</always_on>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>720</samples>
+                        <min_angle>-3.14159</min_angle>
+                        <max_angle>3.14159</max_angle>
+                    </horizontal>
+                </scan>
+                <range>
+                    <min>0.15</min>
+                    <max>12</max>
+                    <resolution>0.01</resolution>
+                </range>
+                <!-- A1M8 datasheet: about 1 % of the distance, never below 5 mm -->
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.012</stddev>
+                </noise>
+            </ray>
+            <topic>scan_raw</topic>
+            <gz_frame_id>laser_frame</gz_frame_id>
+        </sensor>
+    </gazebo>
+
+</robot>

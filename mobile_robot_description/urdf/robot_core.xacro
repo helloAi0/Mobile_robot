@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<!-- Mechanical model of the robot. One rule: VISUAL = detailed meshes (meshes/*.stl, or your CAD/Blender export with
+     the same file name), COLLISION = a few boxes/cylinders. Inertia = mass_properties.xacro (generated from the
+     component table in tools/gen_mass_properties.py: full tensors, parallel-axis theorem, centre of mass offsets).
+
+     Frames: base_link = centre of the drive axle, on the sprung body (x forward, z up, ground at z = -0.05).
+             chassis   = 0.10 m behind the axle. Sensors are fixed to it.
+     Mechanics: sprung body > (prismatic spring/damper) > left/right carrier (gear motor) > (continuous) > wheel.
+                chassis > (continuous, vertical swivel axis) > caster_fork > (continuous axle) > caster_wheel. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="mass_properties.xacro"/>
+    <xacro:include filename="inertial_macros.xacro"/>
+
+    <xacro:property name="mesh" value="package://mobile_robot_description/meshes"/>
+    <xacro:property name="track_half" value="0.175"/>
+    <xacro:property name="wheel_r" value="0.05"/>
+    <xacro:property name="wheel_w" value="0.04"/>
+    <!-- actuators: 12 V gear motor after the gearbox. torque [N*m] and speed [rad/s] limits at the wheel -->
+    <xacro:property name="wheel_max_torque" value="2.0"/>
+    <xacro:property name="wheel_max_speed" value="12.0"/>
+
+    <material name="aluminium"><color rgba="0.72 0.74 0.78 1"/></material>
+    <material name="rubber"><color rgba="0.06 0.06 0.06 1"/></material>
+    <material name="motor"><color rgba="0.20 0.22 0.25 1"/></material>
+    <material name="orange"><color rgba="1 0.3 0.1 1"/></material>
+    <material name="black"><color rgba="0.03 0.03 0.03 1"/></material>
+    <material name="lidar_grey"><color rgba="0.25 0.27 0.30 1"/></material>
+
+    <!-- ===================================================================== sprung body -->
+    <link name="base_link"/>
+
+    <joint name="chassis_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="chassis"/>
+        <origin xyz="-0.1 0 0"/>
+    </joint>
+
+    <link name="chassis">
+        <visual>
+            <geometry><mesh filename="${mesh}/chassis.stl"/></geometry>
+            <material name="aluminium"/>
+        </visual>
+        <!-- collision: two boxes only (lower body incl. battery + computer, and the upper deck) -->
+        <collision name="body_col">
+            <origin xyz="0.15 0 0.07"/>
+            <geometry><box size="0.30 0.24 0.10"/></geometry>
+        </collision>
+        <collision name="deck_col">
+            <origin xyz="0.15 0 0.185"/>
+            <geometry><box size="0.26 0.20 0.012"/></geometry>
+        </collision>
+        <xacro:inertial_chassis/>
+    </link>
+
+    <!-- ===================================================================== drive wheels on spring/damper carriers
+         The carrier slides vertically (prismatic). Spring k and damper c come from the mass budget (generated).
+         q = 0 is the loaded ride height; the spring is free at q = susp_free_z (a few mm lower). Travel limits stop it
+         before the body can slam; if a simulator ignores the spring the robot just sits on the upper stop. -->
+    <xacro:macro name="drive_side" params="side sign">
+        <joint name="${side}_carrier_joint" type="prismatic">
+            <parent link="base_link"/>
+            <child link="${side}_carrier"/>
+            <origin xyz="0 ${sign * track_half} 0"/>
+            <axis xyz="0 0 1"/>
+            <limit lower="${susp_free_z - 0.004}" upper="0.020" effort="200" velocity="1.0"/>
+            <dynamics damping="${susp_c}" friction="0.3"/>
+        </joint>
+
+        <link name="${side}_carrier">
+            <visual>
+                <origin xyz="0 ${-sign * 0.0375} 0"/>
+                <geometry><box size="0.060 0.035 0.035"/></geometry>
+                <material name="motor"/>
+            </visual>
+            <xacro:call macro="inertial_${side}_carrier"/>
+        </link>
+
+        <joint name="${side}_wheel_joint" type="continuous">
+            <parent link="${side}_carrier"/>
+            <child link="${side}_wheel"/>
+            <origin xyz="0 0 0" rpy="${-sign * pi/2} 0 0"/>
+            <axis xyz="0 0 ${sign}"/>
+            <limit effort="${wheel_max_torque}" velocity="${wheel_max_speed}"/>
+            <!-- bearing + gearbox friction -->
+            <dynamics damping="0.02" friction="0.04"/>
+        </joint>
+
+        <link name="${side}_wheel">
+            <visual>
+                <geometry><mesh filename="${mesh}/wheel.stl"/></geometry>
+                <material name="rubber"/>
+            </visual>
+            <collision>
+                <geometry><cylinder radius="${wheel_r}" length="${wheel_w}"/></geometry>
+            </collision>
+            <xacro:inertial_wheel/>
+        </link>
+
+        <!-- tyre (soft rubber on a hard floor): mu ~ 1.0. kp/kd = contact stiffness/damping (the tyre compliance). -->
+        <gazebo reference="${side}_wheel">
+            <mu1>1.0</mu1>
+            <mu2>0.9</mu2>
+            <kp>500000.0</kp>
+            <kd>60.0</kd>
+            <minDepth>0.0005</minDepth>
+            <maxVel>0.5</maxVel>
+        </gazebo>
+        <gazebo reference="${side}_carrier_joint">
+            <springStiffness>${susp_k}</springStiffness>
+            <springReference>${susp_free_z}</springReference>
+            <implicitSpringDamper>true</implicitSpringDamper>
+        </gazebo>
+    </xacro:macro>
+
+    <xacro:drive_side side="left" sign="1"/>
+    <xacro:drive_side side="right" sign="-1"/>
+
+    <!-- ===================================================================== swivel caster
+         Vertical swivel axis (bearing), wheel centre 25 mm behind it ("trail"): the wheel trails and self-aligns.
+         Pivot sits under the base plate; wheel radius 35 mm so the chassis stays level. -->
+    <joint name="caster_swivel_joint" type="continuous">
+        <parent link="chassis"/>
+        <child link="caster_fork"/>
+        <origin xyz="0.26 0 0.02"/>
+        <axis xyz="0 0 1"/>
+        <dynamics damping="0.02" friction="0.006"/>
+    </joint>
+
+    <link name="caster_fork">
+        <visual>
+            <geometry><mesh filename="${mesh}/caster_fork.stl"/></geometry>
+            <material name="motor"/>
+        </visual>
+        <xacro:inertial_caster_fork/>
+    </link>
+
+    <joint name="caster_roll_joint" type="continuous">
+        <parent link="caster_fork"/>
+        <child link="caster_wheel"/>
+        <origin xyz="-0.025 0 -0.035"/>
+        <axis xyz="0 1 0"/>
+        <dynamics damping="0.002" friction="0.002"/>
+    </joint>
+
+    <link name="caster_wheel">
+        <visual>
+            <geometry><mesh filename="${mesh}/caster_wheel.stl"/></geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin rpy="${pi/2} 0 0"/>
+            <geometry><cylinder radius="0.035" length="0.02"/></geometry>
+        </collision>
+        <xacro:inertial_caster_wheel/>
+    </link>
+
+    <!-- hard polyurethane caster tyre: lower friction than the drive tyres -->
+    <gazebo reference="caster_wheel">
+        <mu1>0.6</mu1>
+        <mu2>0.6</mu2>
+        <kp>500000.0</kp>
+        <kd>40.0</kd>
+        <minDepth>0.0005</minDepth>
+    </gazebo>
+
+</robot>

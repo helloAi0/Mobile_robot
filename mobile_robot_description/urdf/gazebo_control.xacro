@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- controller parameters live in the bringup package (they are tuning, not geometry) -->
+    <xacro:arg name="controllers" default="$(find mobile_robot_bringup)/config/my_controllers.yaml"/>
+
+    <ros2_control name="GazeboSystem" type="system">
+        <hardware>
+            <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+        </hardware>
+        <joint name="left_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-${wheel_max_speed}</param>
+                <param name="max">${wheel_max_speed}</param>
+            </command_interface>
+            <state_interface name="velocity"/>
+            <state_interface name="position"/>
+        </joint>
+        <joint name="right_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-${wheel_max_speed}</param>
+                <param name="max">${wheel_max_speed}</param>
+            </command_interface>
+            <state_interface name="velocity"/>
+            <state_interface name="position"/>
+        </joint>
+    </ros2_control>
+
+    <gazebo>
+        <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+            <parameters>$(arg controllers)</parameters>
+        </plugin>
+    </gazebo>
+
+    <!-- The suspension and caster joints are passive (not in ros2_control). Publish their state so that
+         robot_state_publisher can draw the whole robot in RViz: bridged as /joint_states by the Gazebo launch. -->
+    <gazebo>
+        <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+            <topic>/gz_passive_joint_states</topic>
+            <joint_name>left_carrier_joint</joint_name>
+            <joint_name>right_carrier_joint</joint_name>
+            <joint_name>caster_swivel_joint</joint_name>
+            <joint_name>caster_roll_joint</joint_name>
+        </plugin>
+    </gazebo>
+
+</robot>

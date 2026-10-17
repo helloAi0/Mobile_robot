@@ -1,4 +1,0 @@
-Invoking command in '/home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot -- -j20 -l20
-Invoked command in '/home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot -- -j20 -l20
-Invoking command in '/home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot
-Invoked command in '/home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot

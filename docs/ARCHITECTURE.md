@@ -24,18 +24,18 @@
 ```
 
 **Design rule:** everything above the dashed line (simulator or hardware) is the only part that differs.
-The controller configuration (`config/my_controllers.yaml`), the mux, SLAM, Nav2, the autopilot and RViz are the same files in simulation and on the robot,
+The controller configuration (`mobile_robot_bringup/config/my_controllers.yaml`), the mux, SLAM, Nav2, the autopilot and RViz are the same files in simulation and on the robot,
 so what is demonstrated in Gazebo is the software that runs on the machine.
 
 ## Nodes
 | Node | File | Job |
 |---|---|---|
-| `cmd_vel_mux` | `scripts/cmd_vel_mux.py` | single place that talks to the wheels: priority keyboard > Nav2 > autopilot; e-stop; obstacle guard; fail-safe without lidar; speed and acceleration limits; copies `/diff_cont/odom` to `/odom` |
-| `auto_explore` | `scripts/auto_explore.py` | reactive wandering: forward, STOP at obstacles/people, turn to the freer side, back out when stuck (no progress in 4 s) |
-| `teleop_keys` | `scripts/teleop_keys.py` | keyboard driver with live status |
-| `object_detector` | `scripts/object_detector.py` | groups lidar beams into objects in front: orange markers with distance |
-| `cloud_filter` | `scripts/cloud_filter.py` | removes the floor from the depth-camera point cloud |
-| slam_toolbox | `config/slam_toolbox.yaml` | online mapping, loop closure |
+| `cmd_vel_mux` | `mobile_robot_bringup/scripts/cmd_vel_mux.py` | single place that talks to the wheels: priority keyboard > Nav2 > autopilot; e-stop; obstacle guard; fail-safe without lidar; speed and acceleration limits; copies `/diff_cont/odom` to `/odom` |
+| `auto_explore` | `mobile_robot_bringup/scripts/auto_explore.py` | reactive wandering: forward, STOP at obstacles/people, turn to the freer side, back out when stuck (no progress in 4 s) |
+| `teleop_keys` | `mobile_robot_bringup/scripts/teleop_keys.py` | keyboard driver with live status |
+| `object_detector` | `mobile_robot_bringup/scripts/object_detector.py` | groups lidar beams into objects in front: orange markers with distance |
+| `cloud_filter` | `mobile_robot_bringup/scripts/cloud_filter.py` | removes the floor from the depth-camera point cloud |
+| slam_toolbox | `mobile_robot_bringup/config/slam_toolbox.yaml` | online mapping, loop closure |
 | Nav2 | nav2_bringup defaults | goal navigation on the SLAM map |
 
 ## Topics

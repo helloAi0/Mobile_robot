@@ -10,7 +10,7 @@ Type=simple
 User=@USER@
 Environment=ROS_DOMAIN_ID=0
 EnvironmentFile=-/etc/default/mobile_robot
-ExecStart=/bin/bash -lc 'source /opt/ros/jazzy/setup.bash && source @WS@/install/setup.bash && exec ros2 launch mobile_robot hardware.launch.py hardware:=real rviz:=false ${HW_ARGS}'
+ExecStart=/bin/bash -lc 'source /opt/ros/jazzy/setup.bash && source @WS@/install/setup.bash && exec ros2 launch mobile_robot_bringup hardware.launch.py hardware:=real rviz:=false ${HW_ARGS}'
 Restart=on-failure
 RestartSec=5
 # stop the wheels (mux and the controller time out within 0.5 s) before the process is killed

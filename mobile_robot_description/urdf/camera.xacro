@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<!-- Luxonis OAK-D on a two-post bracket at the front of the chassis (see meshes/oakd.stl, the bracket is in the chassis mesh).
+     Stereo depth: 2 x OV9282 mono, 1280x800 -> 640x400 depth, HFOV 72 deg, baseline 7.5 cm, 15 fps used here.
+     One Gazebo rgbd_camera produces colour + depth + cloud from one viewpoint, so the colour stream shares the stereo
+     intrinsics (the real RGB sensor has a 69 deg HFOV: close enough for navigation work).
+     fx = (W/2) / tan(HFOV/2) = 320 / tan(36 deg) = 440.4 px.  Depth range 0.2 .. 8 m (OAK-D ideal range).
+     Lens distortion: small barrel distortion typical of the OV9282 lens (see <distortion>). -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:property name="oakd_hfov" value="1.2566"/>
+
+    <joint name="camera_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="camera_link"/>
+        <origin xyz="0.285 0 0.181" rpy="0 0.18 0"/>
+    </joint>
+
+    <link name="camera_link">
+        <visual>
+            <geometry><mesh filename="${mesh}/oakd.stl"/></geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <geometry><box size="0.030 0.110 0.0545"/></geometry>
+        </collision>
+        <xacro:inertial_camera/>
+    </link>
+
+    <joint name="camera_optical_joint" type="fixed">
+        <parent link="camera_link"/>
+        <child link="camera_link_optical"/>
+        <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    </joint>
+
+    <link name="camera_link_optical"/>
+
+    <gazebo reference="camera_link">
+        <!-- One sensor publishes under the topic name below:
+               /camera/image  /camera/depth_image  /camera/points (colour cloud)  /camera/camera_info
+             Do NOT use the Gazebo Classic plugin libgazebo_ros_camera.so: Harmonic cannot load it. -->
+        <sensor name="camera" type="rgbd_camera">
+            <pose>0 0 0 0 0 0</pose>
+            <visualize>false</visualize>
+            <update_rate>15</update_rate>
+            <always_on>true</always_on>
+            <camera>
+                <horizontal_fov>${oakd_hfov}</horizontal_fov>
+                <image>
+                    <format>R8G8B8</format>
+                    <width>640</width>
+                    <height>400</height>
+                </image>
+                <clip>
+                    <near>0.2</near>
+                    <far>8.0</far>
+                </clip>
+                <depth_camera>
+                    <clip>
+                        <near>0.2</near>
+                        <far>8.0</far>
+                    </clip>
+                </depth_camera>
+                <!-- sensor noise on the colour image (about 3 grey levels of 255) -->
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.012</stddev>
+                </noise>
+                <!-- OV9282 lens: mild barrel distortion -->
+                <distortion>
+                    <k1>-0.04</k1>
+                    <k2>0.01</k2>
+                    <k3>0.0</k3>
+                    <p1>0.0</p1>
+                    <p2>0.0</p2>
+                    <center>0.5 0.5</center>
+                </distortion>
+            </camera>
+            <topic>camera</topic>
+            <!-- Frame stamped on images AND point cloud. Gazebo's cloud uses x forward, y left, z up = camera_link.
+                 Do NOT use camera_link_optical here: RViz would rotate the cloud 90 degrees. -->
+            <gz_frame_id>camera_link</gz_frame_id>
+        </sensor>
+    </gazebo>
+
+</robot>

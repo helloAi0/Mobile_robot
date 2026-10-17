@@ -1,1 +1,0 @@
-/home/user_taha5253/dev_ws/src/mobile_robot/build/mobile_robot/ament_cmake_environment_hooks/local_setup.bash
