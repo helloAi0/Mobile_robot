@@ -37,3 +37,6 @@ test pytest:
 	python3 -m pytest -q mobile_robot_bringup/test
 clean-sim:
 	-pkill -f "gz sim"; pkill -f ruby; true
+
+selftest: ## drive test of the running simulation (no keyboard)
+	bash -c '$(SRC) && ros2 run mobile_robot_bringup selftest.py'

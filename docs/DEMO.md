@@ -25,3 +25,44 @@ Acceptance run (what must work before you present):
 5. `nav2:=true`: a goal in the corridor is reached.
 6. Women walk with their feet on the floor (else `tune_actor_height.py`).
 If something fails run `ros2 run mobile_robot_bringup diagnose.sh --move` and send the output.
+
+---
+
+## Before you record (pre-flight, 3 minutes)
+
+```bash
+# terminal 1: the simulation (wait until RViz and Gazebo are up and the log stops scrolling, about 30 s)
+source /opt/ros/jazzy/setup.bash && source ~/dev_ws/install/setup.bash
+ros2 launch mobile_robot_bringup launch_sim.launch.py
+
+# terminal 2: automatic check, no keyboard needed. The robot drives about 1 m. Every line must say PASS.
+source /opt/ros/jazzy/setup.bash && source ~/dev_ws/install/setup.bash
+ros2 run mobile_robot_bringup selftest.py
+
+# terminal 3: drive it yourself. Type INSIDE this terminal, not in Gazebo or RViz.
+source /opt/ros/jazzy/setup.bash && source ~/dev_ws/install/setup.bash
+ros2 run mobile_robot_bringup teleop_keys.py
+```
+
+Suggested 90-second recording: (1) Gazebo + RViz side by side, (2) drive the corridor with `w` `a` `d` `m`, (3) push a box, cross the ramp,
+(4) stop in front of a wall: the safety layer slows and stops it, (5) press `p`: autopilot explores and the SLAM map grows in RViz,
+(6) run `ros2 run mobile_robot_bringup metrics_logger.py` in parallel and show the summary at the end.
+
+## Warnings in the launch log that are harmless
+
+| message | meaning |
+|---|---|
+| `gz_frame_id ... not defined in SDF. Copying` | Gazebo copies a custom tag; sensors work |
+| `IMU sensor 'imu' not found in hardware_info, skipping` | the IMU is published by the bridge, not by ros2_control |
+| `Desired controller update period ... slower than the gazebo simulation period` | normal: physics runs at 500 Hz, the controller at 50 Hz |
+| `Can't accept new commands. subscriber is inactive` / `TwistStamped with zero timestamp` | printed once while the controller starts |
+| `waiting for service /controller_manager/list_controllers` | spawners waiting for Gazebo to load the robot |
+
+## Problems seen on a real run, and the fix
+
+| symptom | cause | fix |
+|---|---|---|
+| no lidar and no point cloud in RViz, log says `incompatible QoS ... RELIABILITY` | publishers were best-effort, RViz asks for reliable | fixed: `/scan` and `/camera/points_filtered` are published reliable |
+| RViz error `active samplers with a different type refer to the same texture image unit`, SLAM map invisible | graphics driver (typical on WSL2) cannot compile RViz's map shader | the launch now uses software OpenGL for RViz on WSL. Force it: `export MOBILE_ROBOT_RVIZ_GL=software` |
+| robot does not move, teleop line stays `STOPPED`, mux says `idle` | keys were typed in another window: teleop reads the keyboard only in its own terminal | click the teleop terminal first; run `selftest.py` to prove the robot itself works |
+| simulation is slow (real-time factor below 1) | software rendering of cameras and lidar | `gui:=false` to hide the Gazebo window; close other apps; `world:=camera_world.sdf` for a light world |

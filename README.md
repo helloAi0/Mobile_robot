@@ -13,7 +13,7 @@ live SLAM mapping, Nav2 goal navigation, an autonomous obstacle-avoiding mode th
 | **Safety** | `cmd_vel_mux`: e-stop, front/rear obstacle guard, no-lidar = no motion, speed + acceleration limits, command watchdogs |
 | **Perception views** | magenta lidar over the map, floor-free coloured 3D cloud, colour + depth image, object markers with distance |
 | **Hardware path** | `hardware.launch.py` (mock or real motor driver), systemd + udev, Docker, CI with tests |
-| **Quality** | 92 unit tests (safety logic, autopilot, filters, worlds, robot description in sim/mock/real), CI, integration test on mock hardware |
+| **Quality** | 100 unit tests (safety logic, autopilot, filters, worlds, robot description in sim/mock/real), CI, integration test on mock hardware |
 
 ## Quick start
 ```bash
@@ -42,7 +42,7 @@ Written in this repo:
 - `cloud_filter.py`: floor-removing point cloud filter.
 - One URDF for sim, mock and real hardware (ros2_control), with a mock bring-up that needs no robot.
 - `metrics_logger.py`: measures a run (distance, explored area, min clearance, stops) and writes a CSV.
-- 92 unit tests, CI, Docker, systemd/udev deployment files.
+- 100 unit tests, CI, Docker, systemd/udev deployment files.
 
 Honest scope: validated in simulation and unit tests; not yet validated on physical hardware.
 

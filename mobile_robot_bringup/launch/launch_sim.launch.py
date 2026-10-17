@@ -22,6 +22,19 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
+def rviz_environment():
+    """WSL2 / some GPU drivers cannot compile RViz's map shader ("active samplers with a different type refer to the same
+    texture image unit": the SLAM map stays invisible). Software OpenGL (Mesa llvmpipe) fixes it and is fast enough for
+    RViz. Auto-enabled on WSL; force with  export MOBILE_ROBOT_RVIZ_GL=software  or  =native."""
+    mode = os.environ.get('MOBILE_ROBOT_RVIZ_GL', 'auto').lower()
+    if mode == 'auto':
+        try:
+            mode = 'software' if 'microsoft' in open('/proc/version').read().lower() else 'native'
+        except OSError:
+            mode = 'native'
+    return {'LIBGL_ALWAYS_SOFTWARE': '1'} if mode == 'software' else {}
+
+
 def generate_launch_description():
     package_name = 'mobile_robot_bringup'
     pkg_share = get_package_share_directory(package_name)
@@ -69,7 +82,7 @@ def generate_launch_description():
     rviz = Node(
         package='rviz2', executable='rviz2',
         arguments=['-d', os.path.join(pkg_share, 'rviz', 'camera.rviz')],
-        parameters=[{'use_sim_time': True}], output='log',
+        parameters=[{'use_sim_time': True}], output='log', additional_env=rviz_environment(),
         condition=IfCondition(LaunchConfiguration('rviz')))
 
     webcam = IncludeLaunchDescription(

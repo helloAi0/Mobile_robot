@@ -21,18 +21,20 @@ def filter_cloud(raw, point_step, offsets, cam_height=0.231, cam_pitch=0.18, flo
     y = np.ascontiguousarray(raw[:, oy:oy + 4]).view('<f4').ravel()
     z = np.ascontiguousarray(raw[:, oz:oz + 4]).view('<f4').ravel()
     c, s = math.cos(cam_pitch), math.sin(cam_pitch)
-    height = -x * s + z * c + cam_height          # height above the floor
-    forward = x * c + z * s
+    with np.errstate(invalid='ignore'):           # NaN/inf points are dropped below: no RuntimeWarning spam
+        height = -x * s + z * c + cam_height      # height above the floor
+        forward = x * c + z * s
     ok = np.isfinite(x) & np.isfinite(y) & np.isfinite(z)
-    ok &= height > floor_margin
-    ok &= forward < max_range
+    with np.errstate(invalid='ignore'):
+        ok &= height > floor_margin
+        ok &= forward < max_range
     return ok
 
 
 def main():
     import rclpy
     from rclpy.node import Node
-    from rclpy.qos import qos_profile_sensor_data
+    from rclpy.qos import QoSProfile, ReliabilityPolicy, qos_profile_sensor_data
     from sensor_msgs.msg import PointCloud2
 
     class CloudFilter(Node):
@@ -42,7 +44,8 @@ def main():
             self.declare_parameter('cam_pitch', 0.18)
             self.declare_parameter('floor_margin', 0.04)
             self.declare_parameter('max_range', 7.0)
-            self.pub = self.create_publisher(PointCloud2, '/camera/points_filtered', qos_profile_sensor_data)
+            self.pub = self.create_publisher(PointCloud2, '/camera/points_filtered',
+                                             QoSProfile(reliability=ReliabilityPolicy.RELIABLE, depth=2))   # RViz needs reliable
             self.create_subscription(PointCloud2, '/camera/points', self.on_cloud, qos_profile_sensor_data)
             self.get_logger().info('cloud_filter: /camera/points -> /camera/points_filtered (floor removed)')
 

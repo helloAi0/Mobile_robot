@@ -50,7 +50,7 @@ def degrade(ranges, angle_min, inc, rmin, rmax, bias, p, rng):
 def main():
     import rclpy
     from rclpy.node import Node
-    from rclpy.qos import qos_profile_sensor_data
+    from rclpy.qos import QoSProfile, ReliabilityPolicy, qos_profile_sensor_data
     from sensor_msgs.msg import LaserScan
 
     class Degrader(Node):
@@ -66,7 +66,8 @@ def main():
                 self.p["sectors"] = []
             self.rng = random.Random(self.declare_parameter("seed", 0).value or None)
             self.bias, self.last = 0.0, None
-            self.pub = self.create_publisher(LaserScan, "scan", qos_profile_sensor_data)
+            # RELIABLE on purpose: RViz, SLAM and Nav2 can all read it (a best-effort publisher is invisible to a reliable subscriber)
+            self.pub = self.create_publisher(LaserScan, "scan", QoSProfile(reliability=ReliabilityPolicy.RELIABLE, depth=5))
             self.create_subscription(LaserScan, "scan_raw", self.on_scan, qos_profile_sensor_data)
 
         def on_scan(self, m):

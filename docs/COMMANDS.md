@@ -93,7 +93,7 @@ sudo bash deploy/install_service.sh && sudo systemctl enable --now mobile_robot 
 
 ## Tests
 ```bash
-make test                                          # 92 unit tests, plain python, no ROS needed
+make test                                          # 100 unit tests, plain python, no ROS needed
 cd ~/dev_ws && colcon test --packages-select mobile_robot_description mobile_robot_gazebo mobile_robot_bringup && colcon test-result --verbose
 bash ~/dev_ws/src/mobile_robot/mobile_robot_bringup/test/integration_mock.sh        # mock stack: controllers, motion, e-stop (needs a built workspace)
 ```
@@ -113,3 +113,4 @@ python3 mobile_robot_gazebo/tools/make_street_world.py       # mobile_robot_gaze
 python3 mobile_robot_gazebo/tools/make_actor_test_world.py   # mobile_robot_gazebo/worlds/actor_height_test.sdf
 ```
 - `ros2 run mobile_robot_bringup metrics_logger.py` : run metrics (CSV + summary on Ctrl-C)
+- `ros2 run mobile_robot_bringup selftest.py` : automatic drive test, prints PASS/FAIL per subsystem (no keyboard needed)
