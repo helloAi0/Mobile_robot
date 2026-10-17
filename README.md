@@ -6,14 +6,14 @@ live SLAM mapping, Nav2 goal navigation, an autonomous obstacle-avoiding mode th
 
 | | |
 |---|---|
-| **Simulation** | house world with five rooms, free-body physics (boxes, barrels, cones, balls, a ramp) and walking people; street world |
+| **Simulation** | house world with five rooms, hinged doors, friction patches, a ramp, textured props (pallet, boxes, bins, barrels, cones), free-body physics and walking people; street world. Sprung drive wheels, swivel caster, noisy lidar / camera / IMU |
 | **Mapping** | `slam_toolbox` live map in RViz, loop closure, `save_map.sh` |
 | **Navigation** | Nav2: click **2D Goal Pose**, the robot plans and drives |
 | **Autonomy** | `auto:=true`: drives, stops for obstacles and people, turns, continues, backs out when stuck |
 | **Safety** | `cmd_vel_mux`: e-stop, front/rear obstacle guard, no-lidar = no motion, speed + acceleration limits, command watchdogs |
 | **Perception views** | magenta lidar over the map, floor-free coloured 3D cloud, colour + depth image, object markers with distance |
 | **Hardware path** | `hardware.launch.py` (mock or real motor driver), systemd + udev, Docker, CI with tests |
-| **Quality** | 100 unit tests (safety logic, autopilot, filters, worlds, robot description in sim/mock/real), CI, integration test on mock hardware |
+| **Quality** | 116 tests: safety logic, autopilot, filters, robot description in sim/mock/real, an independent physics check, SDF schema lint; CI; integration test on mock hardware |
 
 ## Quick start
 ```bash
@@ -21,8 +21,11 @@ bash mobile_robot_bringup/scripts/install_deps.sh                               
 source /opt/ros/jazzy/setup.bash          # ALWAYS first: without it you get "ament_cmake not found" / "ros2: command not found"
 bash ~/dev_ws/src/mobile_robot/build.sh && source ~/dev_ws/install/setup.bash
 
-ros2 launch mobile_robot_bringup launch_sim.launch.py                     # Gazebo + RViz + live map
-ros2 run mobile_robot_bringup teleop_keys.py                              # 2nd terminal: i/w forward, m/s/, back, j/l turn, k stop, p autopilot
+ros2 launch mobile_robot_bringup launch_sim.launch.py                     # terminal 1: Gazebo + RViz + live map
+ros2 run mobile_robot_bringup selftest.py                                 # terminal 2: automatic drive test, every line must say PASS
+ros2 run mobile_robot_bringup teleop_keys.py                              # terminal 2: keyboard. Type IN THIS terminal. i/w fwd, m/s/, back, j/l turn, k stop, p autopilot
+ros2 run rviz2 rviz2 -d $(ros2 pkg prefix mobile_robot_bringup)/share/mobile_robot_bringup/rviz/camera.rviz \
+     --ros-args -p use_sim_time:=true                                     # RViz alone (the launch file already starts it; use this if you closed it)
 ros2 launch mobile_robot_bringup launch_sim.launch.py auto:=true         # robot explores by itself
 ros2 launch mobile_robot_bringup launch_sim.launch.py nav2:=true         # RViz "2D Goal Pose"
 ros2 run mobile_robot_bringup estop.sh                                    # emergency stop   (estop.sh release = go on)
@@ -42,9 +45,21 @@ Written in this repo:
 - `cloud_filter.py`: floor-removing point cloud filter.
 - One URDF for sim, mock and real hardware (ros2_control), with a mock bring-up that needs no robot.
 - `metrics_logger.py`: measures a run (distance, explored area, min clearance, stops) and writes a CSV.
-- 100 unit tests, CI, Docker, systemd/udev deployment files.
+- Robot description with generated mass properties (full inertia tensors, parallel-axis theorem), sprung drive wheels, offset swivel caster, sensor noise models (`mobile_robot_description`).
+- Worlds and their generators (`mobile_robot_gazebo`), an importer for textured props from osrf/gazebo_models, and the tooling below.
+- 116 tests, CI, Docker, systemd/udev deployment files.
 
-Honest scope: validated in simulation and unit tests; not yet validated on physical hardware.
+## How it is verified
+| claim | evidence | where |
+|---|---|---|
+| the robot drives straight, turns the right way, climbs the 7 deg ramp, stops in 7 cm from full speed, suspension settles in 0.5 s | independent MuJoCo physics check, 18 measured checks, fails on a deliberately wrong wheel axis | `mobile_robot_description/tools/physics_check.py`, `make physics` |
+| the suspension spring is real in Gazebo | read from the Gazebo source: sdformat converts it, the DART backend applies it | [docs/PHYSICS.md](docs/PHYSICS.md) |
+| worlds and models are valid SDF | checked against the official sdformat schema; the linter is itself tested on planted errors | `mobile_robot_gazebo/tools/sdf_lint.py` |
+| safety layer logic (e-stop, obstacle guard, fail-safe, limits) | unit tests | `test/test_mux_safety.py` |
+| the whole running system | `selftest.py` drives the robot through the real command path and reports PASS/FAIL per subsystem | `docs/DEMO.md` |
+
+Scope, stated plainly: validated in simulation and by unit tests; **not yet validated on physical hardware**. The physics check uses a different
+engine from Gazebo, so it proves the robot description (axes, mass, spring, motors, geometry), not every contact detail of Gazebo.
 
 ## Measuring a run
 

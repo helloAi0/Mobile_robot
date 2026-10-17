@@ -2,7 +2,7 @@
 WS ?= $(HOME)/dev_ws
 SRC := source /opt/ros/jazzy/setup.bash && source $(WS)/install/setup.bash
 
-.PHONY: help deps build sim auto nav headless mock test pytest clean-sim
+.PHONY: help deps build sim auto nav headless mock test pytest clean-sim selftest physics
 help:
 	@echo "make deps     install all apt dependencies"
 	@echo "make build    colcon build --symlink-install in $(WS)"
@@ -40,3 +40,6 @@ clean-sim:
 
 selftest: ## drive test of the running simulation (no keyboard)
 	bash -c '$(SRC) && ros2 run mobile_robot_bringup selftest.py'
+
+physics: ## independent MuJoCo physics check of the robot (no ROS needed): pip install mujoco xacro numpy
+	python3 mobile_robot_description/tools/physics_check.py

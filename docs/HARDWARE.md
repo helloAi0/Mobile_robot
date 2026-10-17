@@ -66,7 +66,7 @@ sudo systemctl enable --now mobile_robot && journalctl -u mobile_robot -f
 |---|---|
 | Same software in sim and on robot | yes (hardware.launch.py, mock mode) |
 | Safety layer: e-stop, obstacle guard front/rear, fail-safe on sensor loss, speed/accel limits, watchdogs | yes, unit-tested (`test/test_mux_safety.py`) |
-| Automated tests + CI | 100 unit tests, xacro checks for sim/mock/real, mock-hardware integration test in CI |
+| Automated tests + CI | 116 tests, xacro checks for sim/mock/real, mock-hardware integration test in CI |
 | Reproducible environment | `mobile_robot_bringup/scripts/install_deps.sh`, `Dockerfile` |
 | Start at boot, device naming | `deploy/` (systemd, udev) |
 | Motor and lidar drivers for YOUR parts | **you provide** (Step 2 / 4) |

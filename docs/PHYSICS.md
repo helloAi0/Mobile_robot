@@ -38,6 +38,32 @@ torsional values are in the floor and patch surfaces; `kp`/`kd` are set on the w
 | OAK-D class RGB-D camera | 640x400, 15 Hz, 72 deg HFOV, barrel distortion, image noise |
 | IMU (BMI270 class) | 100 Hz, Gaussian noise, constant turn-on bias and a slowly drifting bias, from datasheet values |
 
+## Measured behaviour (independent physics check)
+`python3 mobile_robot_description/tools/physics_check.py` (also `make physics`, also part of the unit tests and CI) loads the robot from
+the xacro into MuJoCo with the same masses, inertia tensors, spring and damper constants, friction values and the 2 N*m motor limit,
+and measures what the robot does. Result of the last run, 18 of 18 checks:
+
+| check | measured |
+|---|---|
+| ride height at rest | axle 5.0 cm (wheel radius 5.0 cm), level within 0.05 deg, no jitter |
+| straight line | 0.97 m of 1.00 m commanded, 0.0 cm sideways, 0.0 deg heading drift |
+| turn in place | +1.06 rad/s counter-clockwise (kinematic ideal 1.14), centre moves 3 cm |
+| top speed / acceleration | 0.59 m/s of 0.60, body pitch 2.5 deg, suspension travel 8 mm |
+| 7 deg ramp | climbs with the 2 N*m motors, steady body pitch about 7.7 deg |
+| e-stop from 0.6 m/s | stops in 7 cm, 1.9 deg nose-dive |
+| suspension | settles after a 5 cm drop in 0.5 s, no bouncing |
+
+A test deliberately flips one wheel axis and requires the check to fail, so it cannot pass vacuously. While building it, the check
+caught two mistakes in *its own* setup (contact stiffness too hard for the time step; an angle wrapping past pi), which is the
+reason for this section: the numbers above are what remained after those were fixed.
+
+**What this is not:** a different engine from Gazebo, so wheel-to-floor details can differ. What it does prove is the robot description:
+axis signs, mass distribution, spring/damper tuning, motor torque margin and geometry.
+
+**Gazebo side (read from the Gazebo source, not run):** `springStiffness` / `springReference` on a joint are converted by sdformat
+(`parser_urdf.cc`) to `spring_stiffness` / `spring_reference`, and the DART backend (`gz-physics dartsim SDFFeatures.cc`) copies
+them with damping and friction into the DART joint. So the suspension in the simulator is real, not silently ignored.
+
 ## Not verified here
 This was built and unit-tested without a Gazebo or ROS runtime. The suspension, caster behaviour, door hinges, friction values and
 the SDF physics settings must be checked on your machine: drive over the ramp and the wet patch, push a door, and compare

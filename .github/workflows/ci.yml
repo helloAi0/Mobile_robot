@@ -11,8 +11,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
-      - run: pip install pytest pyyaml numpy xacro
+      - run: pip install pytest pyyaml numpy xacro mujoco trimesh pycollada
+      - name: Fetch the official SDF schema (used to lint worlds and models)
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/gazebosim/sdformat /tmp/sdformat
+          git -C /tmp/sdformat sparse-checkout set sdf/1.9
       - run: python -m pytest -q mobile_robot_bringup/test
+        env:
+          SDFORMAT_SDF_DIR: /tmp/sdformat/sdf/1.9
+      - name: Independent physics check (MuJoCo)
+        run: python mobile_robot_description/tools/physics_check.py
 
   ros-build:
     name: ROS 2 Jazzy build + launch files + integration (mock hardware)
@@ -40,6 +48,17 @@ jobs:
         run: |
           . /opt/ros/jazzy/setup.sh && . install/setup.sh
           for f in launch_sim autonomy hardware; do ros2 launch mobile_robot_bringup $f.launch.py --show-args > /dev/null; done
+      - name: Gazebo validates the robot and the worlds (URDF to SDF conversion, schema, physics parameters)
+        working-directory: ws
+        continue-on-error: true      # the walking people use remote Fuel meshes; remove this line once it has run green
+        run: |
+          . /opt/ros/jazzy/setup.sh && . install/setup.sh
+          export GZ_SIM_RESOURCE_PATH=$PWD/install/mobile_robot_gazebo/share/mobile_robot_gazebo/models:$PWD/install
+          xacro install/mobile_robot_description/share/mobile_robot_description/urdf/robot.urdf.xacro hardware:=mock \
+            controllers:=/dev/null > /tmp/robot.urdf
+          gz sdf -p /tmp/robot.urdf > /tmp/robot.sdf
+          gz sdf -k /tmp/robot.sdf
+          for w in install/mobile_robot_gazebo/share/mobile_robot_gazebo/worlds/*.sdf; do gz sdf -k "$w"; done
       - name: Integration test (mock hardware, no simulator)
         working-directory: ws
         continue-on-error: true      # remove this line once it has run green on your repository
