@@ -35,7 +35,7 @@ def test_python_compiles(path):
     compile(open(path).read(), path, 'exec')
 
 
-@pytest.mark.parametrize('path', files('scripts/*.sh') + files('deploy/*.sh'))
+@pytest.mark.parametrize('path', files('scripts/*.sh') + files('deploy/*.sh') + [os.path.join(REPO, 'build.sh')])
 def test_shell_syntax(path):
     assert subprocess.run(['bash', '-n', path]).returncode == 0
 

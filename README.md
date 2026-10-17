@@ -18,7 +18,8 @@ live SLAM mapping, Nav2 goal navigation, an autonomous obstacle-avoiding mode th
 ## Quick start
 ```bash
 bash mobile_robot_bringup/scripts/install_deps.sh                                      # apt packages (once)
-cd ~/dev_ws && colcon build --symlink-install && source install/setup.bash
+source /opt/ros/jazzy/setup.bash          # ALWAYS first: without it you get "ament_cmake not found" / "ros2: command not found"
+bash ~/dev_ws/src/mobile_robot/build.sh && source ~/dev_ws/install/setup.bash
 
 ros2 launch mobile_robot_bringup launch_sim.launch.py                     # Gazebo + RViz + live map
 ros2 run mobile_robot_bringup teleop_keys.py                              # 2nd terminal: i/w forward, m/s/, back, j/l turn, k stop, p autopilot

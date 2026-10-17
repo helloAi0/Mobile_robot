@@ -10,7 +10,8 @@ source ~/dev_ws/install/setup.bash
 ```bash
 cd ~/dev_ws/src && git clone -b claude/teleop-fix https://github.com/helloAi0/Mobile_robot.git mobile_robot   # or: git pull in an existing clone
 bash ~/dev_ws/src/mobile_robot/mobile_robot_bringup/scripts/install_deps.sh        # all apt packages
-cd ~/dev_ws && colcon build --symlink-install && source install/setup.bash
+source /opt/ros/jazzy/setup.bash          # ALWAYS first: without it you get "ament_cmake not found" / "ros2: command not found"
+bash ~/dev_ws/src/mobile_robot/build.sh && source ~/dev_ws/install/setup.bash
 ```
 Update an existing checkout and rebuild clean:
 ```bash
