@@ -1,0 +1,21 @@
+# systemd unit: starts the robot software at boot on the real robot.
+# Install with:  sudo bash deploy/install_service.sh   (fills in your user and workspace)
+[Unit]
+Description=mobile_robot (ROS 2 Jazzy) real-robot bring-up
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=@USER@
+Environment=ROS_DOMAIN_ID=0
+EnvironmentFile=-/etc/default/mobile_robot
+ExecStart=/bin/bash -lc 'source /opt/ros/jazzy/setup.bash && source @WS@/install/setup.bash && exec ros2 launch mobile_robot_bringup hardware.launch.py hardware:=real rviz:=false ${HW_ARGS}'
+Restart=on-failure
+RestartSec=5
+# stop the wheels (mux and the controller time out within 0.5 s) before the process is killed
+KillSignal=SIGINT
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target

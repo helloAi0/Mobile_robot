@@ -1,0 +1,6 @@
+# udev rules: stable device names for the robot's USB serial parts (copy to /etc/udev/rules.d/, then:
+#   sudo udevadm control --reload && sudo udevadm trigger)
+# Find the ids of YOUR devices with:   udevadm info -a -n /dev/ttyUSB0 | grep -E "idVendor|idProduct|serial"
+# Example values below (CH340 motor board, CP2102 lidar adapter): REPLACE them.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", SYMLINK+="robot_motor", MODE="0660", GROUP="dialout"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="robot_lidar", MODE="0660", GROUP="dialout"

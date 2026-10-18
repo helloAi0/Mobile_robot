@@ -1,103 +1,97 @@
-## Robot Package Template
+# mobile_robot: simulation to hardware (ROS 2 Jazzy, Gazebo Harmonic)
 
-This is a GitHub template. You can make your own copy by clicking the green "Use this template" button.
+A differential-drive robot with lidar and depth camera, **the same software in simulation and on the real robot**:
+live SLAM mapping, Nav2 goal navigation, an autonomous obstacle-avoiding mode that stops for walking people, a safety layer
+(e-stop, obstacle guard, fail-safe on sensor loss), a mock-hardware mode and a hardware bring-up path.
 
-It is recommended that you keep the repo/package name the same, but if you do change it, ensure you do a "Find all" using your IDE (or the built-in GitHub IDE by hitting the `.` key) and rename all instances of `my_bot` to whatever your project's name is.
+| | |
+|---|---|
+| **Simulation** | house world with five rooms, hinged doors, friction patches, a ramp, textured props (pallet, boxes, bins, barrels, cones), free-body physics and walking people; street world. Sprung drive wheels, swivel caster, noisy lidar / camera / IMU |
+| **Mapping** | `slam_toolbox` live map in RViz, loop closure, `save_map.sh` |
+| **Navigation** | Nav2: click **2D Goal Pose**, the robot plans and drives |
+| **Autonomy** | `auto:=true`: drives, stops for obstacles and people, turns, continues, backs out when stuck |
+| **Safety** | `cmd_vel_mux`: e-stop, front/rear obstacle guard, no-lidar = no motion, speed + acceleration limits, command watchdogs |
+| **Perception views** | magenta lidar over the map, floor-free coloured 3D cloud, colour + depth image, object markers with distance |
+| **Hardware path** | `hardware.launch.py` (mock or real motor driver), systemd + udev, Docker, CI with tests |
+| **Quality** | 116 tests: safety logic, autopilot, filters, robot description in sim/mock/real, an independent physics check, SDF schema lint; CI; integration test on mock hardware |
 
-Note that each directory currently has at least one file in it to ensure that git tracks the files (and, consequently, that a fresh clone has direcctories present for CMake to find). These example files can be removed if required (and the directories can be removed if `CMakeLists.txt` is adjusted accordingly).
+## Quick start
+```bash
+bash mobile_robot_bringup/scripts/install_deps.sh                                      # apt packages (once)
+source /opt/ros/jazzy/setup.bash          # ALWAYS first: without it you get "ament_cmake not found" / "ros2: command not found"
+bash ~/dev_ws/src/mobile_robot/build.sh && source ~/dev_ws/install/setup.bash
 
-## Driving the robot with the keyboard (ROS 2 Jazzy + Gazebo Harmonic)
+ros2 launch mobile_robot_bringup launch_sim.launch.py                     # terminal 1: Gazebo + RViz + live map
+ros2 run mobile_robot_bringup selftest.py                                 # terminal 2: automatic drive test, every line must say PASS
+ros2 run mobile_robot_bringup teleop_keys.py                              # terminal 2: keyboard. Type IN THIS terminal. i/w fwd, m/s/, back, j/l turn, k stop, p autopilot
+ros2 run rviz2 rviz2 -d $(ros2 pkg prefix mobile_robot_bringup)/share/mobile_robot_bringup/rviz/camera.rviz \
+     --ros-args -p use_sim_time:=true                                     # RViz alone (the launch file already starts it; use this if you closed it)
+ros2 launch mobile_robot_bringup launch_sim.launch.py auto:=true         # robot explores by itself
+ros2 launch mobile_robot_bringup launch_sim.launch.py nav2:=true         # RViz "2D Goal Pose"
+ros2 run mobile_robot_bringup estop.sh                                    # emergency stop   (estop.sh release = go on)
+```
+Every command, with options: **[docs/COMMANDS.md](docs/COMMANDS.md)**. Presentation script: **[docs/DEMO.md](docs/DEMO.md)**.
+How it fits together: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**. Going to hardware: **[docs/HARDWARE.md](docs/HARDWARE.md)**.
 
-The `diff_drive_controller` listens on `/diff_cont/cmd_vel` and expects a **TwistStamped**. The launch file also
-starts `cmd_vel_relay.py`, which forwards a plain `/cmd_vel` (Twist) to it, so either of these works:
+Each new terminal needs `source /opt/ros/jazzy/setup.bash && source ~/dev_ws/install/setup.bash`. Before relaunching: `pkill -f "gz sim"; pkill -f ruby`.
+The first start downloads the people models from Gazebo Fuel (internet once, cached in `~/.gz/fuel`).
+
+## What I built (vs. what I reused)
+
+Reused, standard stacks: ROS 2 Jazzy, Gazebo Harmonic, ros2_control, slam_toolbox, Nav2.
+Written in this repo:
+- `cmd_vel_mux.py`: priority command mux with a safety layer (e-stop, obstacle guard, no-scan fail-safe, speed/accel limits).
+- `auto_explore.py`: reactive autopilot with stuck recovery.
+- `cloud_filter.py`: floor-removing point cloud filter.
+- One URDF for sim, mock and real hardware (ros2_control), with a mock bring-up that needs no robot.
+- `metrics_logger.py`: measures a run (distance, explored area, min clearance, stops) and writes a CSV.
+- Robot description with generated mass properties (full inertia tensors, parallel-axis theorem), sprung drive wheels, offset swivel caster, sensor noise models (`mobile_robot_description`).
+- Worlds and their generators (`mobile_robot_gazebo`), an importer for textured props from osrf/gazebo_models, and the tooling below.
+- 116 tests, CI, Docker, systemd/udev deployment files.
+
+## How it is verified
+| claim | evidence | where |
+|---|---|---|
+| the robot drives straight, turns the right way, climbs the 7 deg ramp, stops in 7 cm from full speed, suspension settles in 0.5 s | independent MuJoCo physics check, 18 measured checks, fails on a deliberately wrong wheel axis | `mobile_robot_description/tools/physics_check.py`, `make physics` |
+| the suspension spring is real in Gazebo | read from the Gazebo source: sdformat converts it, the DART backend applies it | [docs/PHYSICS.md](docs/PHYSICS.md) |
+| worlds and models are valid SDF | checked against the official sdformat schema; the linter is itself tested on planted errors | `mobile_robot_gazebo/tools/sdf_lint.py` |
+| safety layer logic (e-stop, obstacle guard, fail-safe, limits) | unit tests | `test/test_mux_safety.py` |
+| the whole running system | `selftest.py` drives the robot through the real command path and reports PASS/FAIL per subsystem | `docs/DEMO.md` |
+
+Scope, stated plainly: validated in simulation and by unit tests; **not yet validated on physical hardware**. The physics check uses a different
+engine from Gazebo, so it proves the robot description (axes, mass, spring, motors, geometry), not every contact detail of Gazebo.
+
+## Measuring a run
 
 ```bash
-# Terminal 1: simulation (also opens RViz with the right config)
-colcon build --symlink-install && source install/setup.bash
-ros2 launch mobile_robot launch_sim.launch.py
-
-# Terminal 2: keyboard (click into this terminal first so it has focus!)
-source ~/dev_ws/install/setup.bash
-ros2 run mobile_robot teleop_keys.py     # recommended: keeps sending, shows if the controller listens
-# alternative: ros2 run mobile_robot teleop.sh   (stock teleop_twist_keyboard)
+ros2 run mobile_robot_bringup metrics_logger.py --ros-args -p csv:=$HOME/run1.csv   # Ctrl-C prints the summary
 ```
 
-Keys (`teleop_keys.py`; the status line shows `controller listening` or `NO CONTROLLER`): `i` forward, `,` backward, `j`/`l` turn, `u`/`o` forward + turn, **`k` stop**, `q`/`z` faster/slower.
-`teleop_twist_keyboard` sends one message per key press; `cmd_vel_timeout: 10.0` in `config/my_controllers.yaml`
-keeps the robot moving after a press until you press `k` (simulation only).
+## Reading RViz (`mobile_robot_bringup/rviz/camera.rviz`)
+* **MAP**: black = wall, white = free, grey = unknown. **Magenta dots = lidar** (720 beams, 360°, 0.15-12 m). Grid squares are 1 m.
+* **Camera 3D (floor removed)**: the depth camera as a coloured cloud (`cloud_filter.py` drops the floor). **Orange balls + "x.x m"**: objects found in front. Green line: Nav2 path.
+* Panels on the left: colour and depth image. Mouse: left-drag orbit, middle-drag pan, scroll zoom. `gui:=false` runs without the Gazebo window.
+* Gazebo panels: click the refresh arrow of "Visualize lidar" / "Camera preview" and pick `/scan` / `/camera/image`.
 
-Robot does not move? Run `ros2 run mobile_robot diagnose.sh --move` and read the `[FAIL]` lines. Also kill leftovers
-of an earlier run before relaunching: `pkill -f "gz sim"; pkill -f ruby`.
+## Worlds (`mobile_robot_gazebo/worlds/`, generated by `mobile_robot_gazebo/tools/`)
+`house_world.sdf` (default; corridor + 5 rooms, 1.2 m doors, furniture, ramp, 4 walking people), `street_world.sdf` (outdoor),
+`camera_world.sdf` (tiny test), `actor_height_test.sdf` (calibration). People are Gazebo actors: animated, seen by camera and lidar, **no collision**
+(the robot stops for them because the lidar sees them). If a walker floats or sinks, see "Walkers floating" in docs/COMMANDS.md.
 
-## Camera preview (Gazebo + RViz)
-
-`launch_sim.launch.py` now starts Gazebo with `worlds/camera_world.sdf`. Gazebo's stock `empty.sdf`
-does not load the Sensors system, so the camera never rendered. The new world loads it, adds a few
-objects in front of the robot and opens a floating **Camera preview** panel in the Gazebo window
-(if it is empty, pick `/camera/image_raw` in its drop-down).
-
-For ROS 2 / RViz the camera is an `rgbd_camera` (Gazebo Harmonic). It is bridged as
-`/camera/image_raw`, `/camera/depth/image_raw`, `/camera/points` (coloured point cloud) and `/camera/camera_info`.
-Do not use `libgazebo_ros_camera.so` or `<plugin ... gazebo_ros_...>` from older (Gazebo Classic) tutorials: Harmonic cannot load them.
-
-```bash
-rviz2 -d $(ros2 pkg prefix mobile_robot)/share/mobile_robot/rviz/camera.rviz   # image + depth + coloured 3D points
+## Repository layout
+```
+mobile_robot_description/   urdf/ (xacro: chassis, suspension, caster, sensors, ros2_control), meshes/ (visual), tools/ (inertia + mesh generators)
+mobile_robot_gazebo/        worlds/ (house, street, calibration), models/ (textured props from osrf/gazebo_models, CC BY 3.0; docs/ASSETS.md), launch/gazebo.launch.py, scripts/ (scan_degrader, tune_actor_height), tools/ (world generators), config/gui.config
+mobile_robot_bringup/       launch/ (launch_sim, hardware, autonomy), config/ (controllers, slam), rviz/, scripts/ (cmd_vel_mux, auto_explore, teleop_keys, cloud_filter, estop, metrics, ...), test/ (pytest)
+deploy/ (systemd, udev)  docs/  Dockerfile  Makefile  .github/workflows/ci.yml
 ```
 
-Manual checks:
+## Troubleshooting
+* `ros2: command not found` / `Package 'mobile_robot_bringup' not found`: this terminal has no ROS loaded (`source` lines above).
+* The robot does not move: start the keyboard terminal when the launch log says `diff_cont` is active; the status line must show `mux OK`; run `ros2 run mobile_robot_bringup diagnose.sh --move`.
+* Robot is stuck: back out with `m`; the status line shows `obstacle` when the guard blocks forward motion. In autopilot the robot backs out by itself.
+* No map: `ros2 pkg prefix slam_toolbox` must work (`mobile_robot_bringup/scripts/install_deps.sh`).
+* Point cloud looks rotated: the sensor in `mobile_robot_description/urdf/camera.xacro` must use `<gz_frame_id>camera_link</gz_frame_id>`.
+* Optional webcam: `sudo apt install ros-jazzy-v4l2-camera`, then `webcam:=true` and tick "Webcam (optional)" in RViz.
 
-```bash
-ros2 topic hz /camera/image_raw          # should show ~10 Hz
-rviz2                                    # Add -> By topic -> /camera/image_raw -> Image
-                                         # (Fixed Frame: base_link)
-```
-
-Quick checks if there is no image: `gz topic -l | grep camera` (should list `/camera/image_raw`)
-and `ros2 topic list | grep camera`. If Gazebo crashes or the image is black on a machine without
-a GPU (VM / WSL), change `ogre2` to `ogre` in the Sensors plugin of `worlds/camera_world.sdf`.
-
-
-## Moving the view (mouse)
-
-- **Gazebo:** the window uses Gazebo's standard layout (`config/gui.config`) plus the Camera preview.
-  Left-drag = pan, middle-drag (or Shift + left-drag) = orbit, scroll = zoom. Click a model to select it.
-- **RViz:** use `rviz/camera.rviz` (toolbar with Interact / Move Camera). Left-drag = orbit, middle-drag = pan, scroll = zoom.
-  Drag the panel borders to enlarge the Camera image / Depth image panels.
-
-## Point cloud looks rotated (floor standing up like a wall)?
-
-Gazebo's `rgbd_camera` point cloud uses the Gazebo axes (x forward, y left, z up), so the sensor in
-`description/camera.xacro` must use `<gz_frame_id>camera_link</gz_frame_id>`, **not** `camera_link_optical`.
-
-
-## Street world, physics, lidar and detector
-
-`ros2 launch mobile_robot launch_sim.launch.py` starts `worlds/street_world.sdf` + Gazebo + RViz.
-
-**World:** sidewalk, grass, road with crosswalk and cars, three buildings, trees, lamps, benches, kiosk, bus stop,
-fences, a ramp and speed bumps. **Free bodies with real physics** (push them, knock them over): traffic cones,
-barrels, crates (a stack), balls, a cardboard box. **Walking people** (Gazebo actors): two men and three women
-(Fuel `Luca/FemaleVisitorWalk`). Actors are animations: camera and lidar see them but they have no collision.
-Fuel models are downloaded on the first start (internet needed, cached in `~/.gz/fuel`).
-
-Walkers floating or sinking? `ros2 run mobile_robot tune_actor_height.py 0.8` (women; smaller = lower, try
-0.7 ... 1.1) or `... 1.0 man` for the men, then restart.
-
-```bash
-ros2 launch mobile_robot launch_sim.launch.py world:=camera_world.sdf   # the older, simple world
-ros2 launch mobile_robot launch_sim.launch.py detector:=false rviz:=false webcam:=true
-```
-
-**How to read RViz** (`rviz/camera.rviz`, opened by the launch file):
-
-- Grid = 1 m squares, so you can read distances.
-- **Green dots = the LIDAR**: one ring around the robot. Each dot is a laser beam that hit something (720 beams,
-  360 degrees, up to 12 m). No dots in a direction = nothing within 12 m there.
-- **Camera 3D (floor removed)**: the depth camera as a coloured 3D cloud, only things standing on the floor
-  (`scripts/cloud_filter.py` removes the floor from `/camera/points`).
-- **Orange balls + "x.x m"** = `scripts/object_detector.py`: groups lidar dots into objects closer than 4 m in the
-  front +/-70 degrees. It does not recognise people, only "something is here".
-- Left panels: colour image and depth image of the camera.
-
-Gazebo: click the refresh arrow in the "Visualize lidar" / "Camera preview" panels and pick `/scan` / `/camera/image`.
-
+License: Apache-2.0 (see LICENSE.md).

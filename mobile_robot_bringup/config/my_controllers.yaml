@@ -1,0 +1,90 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 50
+    use_sim_time: true
+
+    diff_cont:
+      type: diff_drive_controller/DiffDriveController
+
+    joint_broad:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+diff_cont:
+  ros__parameters:
+    use_sim_time: true
+    publish_rate: 50.0
+    base_frame_id: base_link
+    left_wheel_names: ['left_wheel_joint']
+    right_wheel_names: ['right_wheel_joint']
+    wheel_separation: 0.35
+    wheel_radius: 0.05
+    # Jazzy: the controller listens on /diff_cont/cmd_vel as geometry_msgs/TwistStamped.
+    # (use_stamped_vel was removed, so the old "false" setting no longer gives a plain Twist topic.)
+    # false = odometry from the REAL wheel movement (needed for SLAM: pushing a box or hitting a wall shows up)
+    open_loop: false
+    enable_odom_tf: true
+    odom_frame_id: odom
+    # cmd_vel_mux.py publishes continuously (20 Hz), so a short timeout is right: if the mux or the
+    # network dies the robot stops after 0.5 s. (Safe on real hardware too.)
+    cmd_vel_timeout: 0.5
+
+    # Actuator limits (the controller clamps what the mux asks for, as a second safety net).
+    # Wheel limit: 12 rad/s * 0.05 m = 0.6 m/s (see wheel_max_speed in robot_core.xacro). Acceleration is limited
+    # so the sprung body does not pitch violently and the tyres do not break traction.
+    linear.x.has_velocity_limits: true
+    linear.x.max_velocity: 0.6
+    linear.x.min_velocity: -0.6
+    linear.x.has_acceleration_limits: true
+    linear.x.max_acceleration: 1.2
+    linear.x.min_acceleration: -1.8
+    angular.z.has_velocity_limits: true
+    angular.z.max_velocity: 2.0
+    angular.z.min_velocity: -2.0
+    angular.z.has_acceleration_limits: true
+    angular.z.max_acceleration: 4.0
+    angular.z.min_acceleration: -4.0
+
+
+
+    # wheels_per_side: x
+    # wheel_separation_multiplier: x
+    # left_wheel_radius_multiplier: x
+    # right_wheel_radius_multiplier: x
+
+    # odom_frame_id: x
+    # pose_covariance_diagonal: x
+    # twist_covariance_diagonal: x
+    # open_loop: x
+    # enable_odom_tf: x
+
+    # cmd_vel_timeout: x
+    # publish_limited_velocity: x
+    # velocity_rolling_window_size: x
+    
+
+    # linear.x.has_velocity_limits: false
+    # linear.x.has_acceleration_limits: false
+    # linear.x.has_jerk_limits: false
+    # linear.x.max_velocity: NAN
+    # linear.x.min_velocity: NAN
+    # linear.x.max_acceleration: NAN
+    # linear.x.min_acceleration: NAN
+    # linear.x.max_jerk: NAN
+    # linear.x.min_jerk: NAN
+
+    # angular.z.has_velocity_limits: false
+    # angular.z.has_acceleration_limits: false
+    # angular.z.has_jerk_limits: false
+    # angular.z.max_velocity: NAN
+    # angular.z.min_velocity: NAN
+    # angular.z.max_acceleration: NAN
+    # angular.z.min_acceleration: NAN
+    # angular.z.max_jerk: NAN
+    # angular.z.min_jerk: NAN
+
+
+
+
+joint_broad:
+  ros__parameters:
+    use_sim_time: true
