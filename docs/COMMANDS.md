@@ -8,14 +8,14 @@ source ~/dev_ws/install/setup.bash
 
 ## Install and build (once)
 ```bash
-cd ~/dev_ws/src && git clone -b claude/teleop-fix https://github.com/helloAi0/Mobile_robot.git mobile_robot   # or: git pull in an existing clone
+mkdir -p ~/dev_ws/src && cd ~/dev_ws/src && git clone https://github.com/helloAi0/Mobile_robot.git mobile_robot   # or: git pull in an existing clone
 bash ~/dev_ws/src/mobile_robot/mobile_robot_bringup/scripts/install_deps.sh        # all apt packages
 source /opt/ros/jazzy/setup.bash          # ALWAYS first: without it you get "ament_cmake not found" / "ros2: command not found"
 bash ~/dev_ws/src/mobile_robot/build.sh && source ~/dev_ws/install/setup.bash
 ```
 Update an existing checkout and rebuild clean:
 ```bash
-cd ~/dev_ws/src/mobile_robot && git fetch origin && git reset --hard origin/claude/teleop-fix
+cd ~/dev_ws/src/mobile_robot && git fetch origin && git reset --hard origin/main
 cd ~/dev_ws && rm -rf build/mobile_robot_* install/mobile_robot_* && colcon build --symlink-install && source install/setup.bash
 ```
 
@@ -102,8 +102,7 @@ bash ~/dev_ws/src/mobile_robot/mobile_robot_bringup/test/integration_mock.sh    
 ```bash
 cd ~/dev_ws/src/mobile_robot          # run git ONLY here, never in ~/dev_ws
 git status && git add -A && git commit -m "describe the change"
-git push origin claude/teleop-fix                                   # your branch
-# to publish on main:  git checkout main && git pull origin main && git merge claude/teleop-fix && git push origin main
+git push origin main
 ```
 
 ## Regenerating the worlds
