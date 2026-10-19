@@ -82,6 +82,7 @@ jobs:
           gz sdf -k /tmp/robot.sdf
           for w in install/mobile_robot_gazebo/share/mobile_robot_gazebo/worlds/*.sdf; do gz sdf -k "$w"; done
       - name: Integration test (mock hardware, no simulator)
+        timeout-minutes: 4
         working-directory: ws
         continue-on-error: true      # remove this line once it has run green on your repository
         run: . /opt/ros/jazzy/setup.sh && . install/setup.sh && bash src/mobile_robot/mobile_robot_bringup/test/integration_mock.sh
