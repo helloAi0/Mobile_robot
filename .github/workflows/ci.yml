@@ -54,6 +54,7 @@ jobs:
           colcon test --packages-select mobile_robot_description mobile_robot_gazebo mobile_robot_bringup --event-handlers console_direct+ > /tmp/colcon_test.log 2>&1 || true
           if ! colcon test-result --verbose > /tmp/colcon_result.log 2>&1; then
             # surface the failure in the run's annotations (readable without downloading logs)
+            set +e
             (cd src/mobile_robot && python3 -m pytest -q -rs mobile_robot_bringup/test -p no:cacheprovider > /tmp/pytest_direct.log 2>&1 || true; python3 -m pytest --collect-only -q mobile_robot_bringup/test -p no:cacheprovider 2>&1 | tail -6 >> /tmp/pytest_direct.log; python3 --version >> /tmp/pytest_direct.log; pip list 2>/dev/null | grep -i -E "pytest|scipy|numpy|yaml" >> /tmp/pytest_direct.log)
             msg=$( (tail -45 /tmp/pytest_direct.log; grep -A6 "The following tests FAILED" /tmp/colcon_test.log; grep -E "^(FAILED|ERROR) |short test summary|passed|failed|ModuleNotFound|ImportError|rror:" /tmp/colcon_test.log | head -40) | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
             echo "::error title=colcon test failed::${msg}"
