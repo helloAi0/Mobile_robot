@@ -21,7 +21,7 @@ jobs:
           SDFORMAT_SDF_DIR: /tmp/sdformat/sdf/1.9
       - name: Independent physics check (MuJoCo)
         run: python mobile_robot_description/tools/physics_check.py
-      - name: Benchmark smoke test (3 runs, 60 s: the pipeline works, the numbers are not the README's)
+      - name: Benchmark smoke test (3 runs, 60 s, pipeline only)
         run: python mobile_robot_bringup/tools/benchmark.py --backend sim2d --runs 3 --duration 60 --out /tmp/bench_smoke.json
       - name: C++ mux core vs the Python mux (golden vectors) and latency
         run: |

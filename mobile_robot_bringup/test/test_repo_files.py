@@ -122,3 +122,11 @@ def test_third_party_models_are_attributed():
     assert 'Creative Commons Attribution 3.0' in text
     for m in MODEL_NAMES:
         assert '`' + m + '`' in text, m + ' missing from ATTRIBUTION.md'
+
+
+def test_ci_workflow_is_valid_yaml_with_runnable_steps():
+    wf = yaml.safe_load(open(os.path.join(REPO, '.github', 'workflows', 'ci.yml')))
+    assert wf['jobs']
+    for job in wf['jobs'].values():
+        for step in job['steps']:
+            assert 'uses' in step or 'run' in step, step
