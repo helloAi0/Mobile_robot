@@ -49,7 +49,17 @@ jobs:
         run: . /opt/ros/jazzy/setup.sh && colcon build --symlink-install
       - name: Unit tests through colcon
         working-directory: ws
-        run: . /opt/ros/jazzy/setup.sh && colcon test --packages-select mobile_robot_description mobile_robot_gazebo mobile_robot_bringup && colcon test-result --verbose
+        run: |
+          . /opt/ros/jazzy/setup.sh
+          colcon test --packages-select mobile_robot_description mobile_robot_gazebo mobile_robot_bringup --event-handlers console_direct+ > /tmp/colcon_test.log 2>&1 || true
+          if ! colcon test-result --verbose > /tmp/colcon_result.log 2>&1; then
+            # surface the failure in the run's annotations (readable without downloading logs)
+            msg=$(grep -E "FAILED|Error|error|assert|No module" /tmp/colcon_test.log | head -25 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=colcon test failed::${msg}"
+            tail -40 /tmp/colcon_result.log
+            exit 1
+          fi
+          cat /tmp/colcon_result.log | tail -5
       - name: Launch files load
         working-directory: ws
         run: |
