@@ -5,11 +5,15 @@ import sys
 
 import pytest
 
-pytest.importorskip('mujoco')
-pytest.importorskip('xacro')
 TOOLS = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'mobile_robot_description', 'tools')
 sys.path.insert(0, TOOLS)
-import physics_check  # noqa: E402
+try:
+    import mujoco  # noqa: F401
+    import xacro  # noqa: F401
+    import physics_check
+except ImportError:           # never raise Skipped at import time: the ROS launch_testing plugin imports every test file and one skip aborts the whole run
+    physics_check = None
+pytestmark = pytest.mark.skipif(physics_check is None, reason='mujoco / xacro not installed (pip install mujoco xacro)')
 
 
 def test_robot_physics_checks_pass():

@@ -3,7 +3,11 @@ import math
 import numpy as np
 import pytest
 
-sim2d = pytest.importorskip('sim2d')
+try:
+    import sim2d
+except ImportError:           # scipy missing; see test_description.py for why this is not importorskip
+    sim2d = None
+pytestmark = pytest.mark.skipif(sim2d is None, reason='needs scipy')
 
 
 def test_same_seed_gives_the_same_run():

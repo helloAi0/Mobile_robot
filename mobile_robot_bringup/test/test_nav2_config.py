@@ -23,7 +23,10 @@ def mux_default(name):
 
 def test_footprint_is_the_robots_and_identical_in_both_costmaps():
     assert FP == ast.literal_eval(WORLD_GLOBAL['footprint'])
-    hm = pytest.importorskip('house_map')
+    try:
+        import house_map as hm
+    except ImportError:
+        pytest.skip('needs scipy')        # inside a test function a skip is fine
     assert [tuple(p) for p in FP] == [tuple(p) for p in hm.FOOTPRINT]
     import benchmark_metrics as bm
     assert [tuple(p) for p in FP] == [tuple(p) for p in bm.FOOTPRINT]

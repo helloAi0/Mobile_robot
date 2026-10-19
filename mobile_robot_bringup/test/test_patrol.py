@@ -8,8 +8,12 @@ import patrol
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROUTE = os.path.join(ROOT, 'config', 'patrol_house.yaml')
 R = patrol.load_route(ROUTE)
-hm = pytest.importorskip('house_map')
-H = hm.load()
+try:
+    import house_map as hm
+    H = hm.load()
+except ImportError:           # scipy missing; see test_description.py for why this is not importorskip
+    hm = H = None
+pytestmark = pytest.mark.skipif(hm is None, reason='needs scipy')
 ROBOT_RADIUS = 0.30
 
 

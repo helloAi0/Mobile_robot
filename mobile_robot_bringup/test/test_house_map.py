@@ -4,9 +4,12 @@ import os
 import numpy as np
 import pytest
 
-house_map = pytest.importorskip('house_map')       # needs scipy
-
-H = house_map.load()
+try:
+    import house_map
+    H = house_map.load()
+except ImportError:           # scipy missing; see test_description.py for why this is not importorskip
+    house_map = H = None
+pytestmark = pytest.mark.skipif(house_map is None, reason='needs scipy')
 
 
 def test_world_is_read_from_the_sdf():

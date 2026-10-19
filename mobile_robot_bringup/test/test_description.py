@@ -6,7 +6,11 @@ import xml.dom.minidom as minidom
 
 import pytest
 
-xacro = pytest.importorskip('xacro')
+try:
+    import xacro
+except ImportError:           # never raise Skipped at import time: the ROS launch_testing plugin imports every test file and one skip aborts the whole run
+    xacro = None
+pytestmark = pytest.mark.skipif(xacro is None, reason='xacro not installed')
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))     # mobile_robot_bringup
 REPO = os.path.dirname(ROOT)
 DESC = os.path.join(REPO, 'mobile_robot_description')

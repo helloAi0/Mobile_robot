@@ -130,3 +130,12 @@ def test_ci_workflow_is_valid_yaml_with_runnable_steps():
     for job in wf['jobs'].values():
         for step in job['steps']:
             assert 'uses' in step or 'run' in step, step
+
+
+def test_no_module_level_skip_in_test_files():
+    """pytest.importorskip / pytest.skip at module level aborted the whole colcon test run in the ROS container
+    (the launch_testing plugin imports every test file). Use pytestmark = skipif(...) instead."""
+    for path in files('test/test_*.py', ROOT):
+        for line in open(path).read().splitlines():
+            if line.startswith(('pytest.importorskip', 'pytest.skip')) or re.match(r'^\w+ = pytest\.importorskip', line):
+                pytest.fail(f'{os.path.basename(path)}: module-level skip: {line}')

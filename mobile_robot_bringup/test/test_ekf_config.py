@@ -106,15 +106,21 @@ def test_mux_feeds_the_filtered_odometry_to_nav2_and_slam():
 
 
 # ---------------------------------------------------------------- the planar model that mirrors the configuration
-ekf_model = pytest.importorskip('ekf_model')
+try:
+    import ekf_model
+except ImportError:           # numpy missing; see test_description.py for why this is not importorskip
+    ekf_model = None
+needs_model = pytest.mark.skipif(ekf_model is None, reason='needs numpy')
 
 
+@needs_model
 def test_model_takes_its_process_noise_from_the_yaml():
     m = ekf_model.PlanarEKF.from_yaml(os.path.join(CFG, 'ekf.yaml'))
     pn = EKF['process_noise_covariance']
     assert m.Q[0, 0] == pn[0] and m.Q[2, 2] == pn[5 * 15 + 5] and m.Q[3, 3] == pn[6 * 15 + 6] and m.Q[4, 4] == pn[11 * 15 + 11]
 
 
+@needs_model
 def test_model_ignores_wheel_slip_in_yaw_rate_because_the_gyro_is_trusted():
     f = ekf_model.PlanarEKF.from_yaml(os.path.join(CFG, 'ekf.yaml'))
     wheel_var = CTL['diff_cont']['ros__parameters']['twist_covariance_diagonal']
@@ -127,6 +133,7 @@ def test_model_ignores_wheel_slip_in_yaw_rate_because_the_gyro_is_trusted():
     assert abs(odom_yaw) > 2.9 and abs(f.pose[2]) < 0.1
 
 
+@needs_model
 def test_model_without_a_gyro_follows_the_wheels():
     f = ekf_model.PlanarEKF.from_yaml(os.path.join(CFG, 'ekf.yaml'))
     for _ in range(500):
@@ -135,6 +142,7 @@ def test_model_without_a_gyro_follows_the_wheels():
     assert abs(f.pose[2] - 3.0) < 0.3
 
 
+@needs_model
 def test_model_tracks_a_circle():
     f = ekf_model.PlanarEKF.from_yaml(os.path.join(CFG, 'ekf.yaml'))
     for _ in range(1000):
