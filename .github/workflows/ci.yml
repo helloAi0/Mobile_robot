@@ -55,8 +55,11 @@ jobs:
           if ! colcon test-result --verbose > /tmp/colcon_result.log 2>&1; then
             # surface the failure in the run's annotations (readable without downloading logs)
             set +e
+            for v in "A:" "B:-p no:launch_testing -p no:launch_testing_ros" "C:-p no:ament_lint -p no:ament_flake8 -p no:ament_pep257 -p no:ament_copyright -p no:ament_xmllint" "D:--ignore=mobile_robot_bringup/test/test_physics.py" "E:--co"; do
+              (cd src/mobile_robot && echo "variant ${v%%:*} [${v#*:}]: $(python3 -m pytest -q -p no:cacheprovider ${v#*:} mobile_robot_bringup/test 2>&1 | tail -3 | tr '\n' ' ')") >> /tmp/variants.log
+            done
             (cd src/mobile_robot && python3 -m pytest -q -rs mobile_robot_bringup/test -p no:cacheprovider > /tmp/pytest_direct.log 2>&1 || true; python3 -m pytest --collect-only -q mobile_robot_bringup/test -p no:cacheprovider 2>&1 | tail -6 >> /tmp/pytest_direct.log; python3 --version >> /tmp/pytest_direct.log; python3 -c 'import pytest;print("pytest",pytest.__version__)' >> /tmp/pytest_direct.log 2>&1; python3 -m pytest -v mobile_robot_bringup/test/test_auto_explore.py -p no:cacheprovider 2>&1 | tail -12 >> /tmp/pytest_direct.log; ls mobile_robot_bringup/test | head -30 >> /tmp/pytest_direct.log; env | grep -i pytest >> /tmp/pytest_direct.log; pip list 2>/dev/null | grep -i -E "pytest|scipy|numpy|yaml" >> /tmp/pytest_direct.log)
-            msg=$( (tail -45 /tmp/pytest_direct.log; grep -A6 "The following tests FAILED" /tmp/colcon_test.log; grep -E "^(FAILED|ERROR) |short test summary|passed|failed|ModuleNotFound|ImportError|rror:" /tmp/colcon_test.log | head -40) | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            msg=$( (cat /tmp/variants.log; tail -15 /tmp/pytest_direct.log; grep -A6 "The following tests FAILED" /tmp/colcon_test.log; grep -E "^(FAILED|ERROR) |short test summary|passed|failed|ModuleNotFound|ImportError|rror:" /tmp/colcon_test.log | head -40) | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
             echo "::error title=colcon test failed::${msg}"
             tail -40 /tmp/colcon_result.log
             exit 1
