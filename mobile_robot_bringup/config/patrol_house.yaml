@@ -1,0 +1,20 @@
+# Patrol route through all five rooms of house_world.sdf, in the MAP frame.
+# The map origin is where the robot starts (0, 0, facing +x), which is also the world origin of the SDF, so these are
+# world coordinates. Every waypoint is checked against the world's geometry by tests/test_patrol.py
+# (free space, reachable, at least the robot radius + margin from any wall; distances between consecutive points).
+# Keep waypoints in the middle of rooms and in doorways' straight lines: the hinged doors are modelled as open.
+patrol:
+  loops: 0                 # 0 = forever, N = stop after N laps
+  retries: 2               # tries per waypoint before it is skipped
+  goal_timeout_s: 90.0     # give up on one goal after this long (simulated seconds)
+  pause_s: 1.0             # stand still at each waypoint
+  waypoints:
+    - {name: corridor_west,  x: -6.0, y: 0.0,  yaw_deg: 180.0}
+    - {name: living_room,    x: -5.35, y: 1.9, yaw_deg: 90.0}
+    - {name: corridor_mid,   x: -2.0, y: 0.0,  yaw_deg: 0.0}
+    - {name: dining_room,    x: -1.6, y: 2.4,  yaw_deg: 90.0}
+    - {name: corridor_east,  x: 4.2,  y: 0.2,  yaw_deg: 0.0}
+    - {name: bedroom,        x: 5.35, y: 2.4,  yaw_deg: 90.0}
+    - {name: corridor_east2, x: 6.5,  y: 0.0,  yaw_deg: -90.0}
+    - {name: workshop,       x: 4.0,  y: -3.2, yaw_deg: -90.0}
+    - {name: office,         x: -4.0, y: -3.0, yaw_deg: 180.0}

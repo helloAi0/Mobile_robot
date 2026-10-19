@@ -1,0 +1,468 @@
+{
+ "backend": "sim2d",
+ "world": "house_world.sdf",
+ "runs_config": {
+  "runs": 20,
+  "duration_s": 300.0,
+  "first_seed": 0
+ },
+ "reachable_floor_m2": 97.0,
+ "aggregate": {
+  "duration_s": {
+   "mean": 299.8,
+   "std": 0.0,
+   "min": 299.8,
+   "max": 299.8,
+   "n": 20,
+   "missing": 0
+  },
+  "coverage_pct": {
+   "mean": 18.62,
+   "std": 5.35,
+   "min": 10.6,
+   "max": 26.9,
+   "n": 20,
+   "missing": 0
+  },
+  "t25_s": {
+   "mean": 229.6,
+   "std": 20.2,
+   "min": 209.4,
+   "max": 249.8,
+   "n": 2,
+   "missing": 18
+  },
+  "t50_s": {
+   "n": 0,
+   "missing": 20
+  },
+  "collisions": {
+   "mean": 0.05,
+   "std": 0.22,
+   "min": 0,
+   "max": 1,
+   "n": 20,
+   "missing": 0
+  },
+  "person_contacts": {
+   "mean": 3.25,
+   "std": 4.5,
+   "min": 0,
+   "max": 17,
+   "n": 20,
+   "missing": 0
+  },
+  "min_clearance_m": {
+   "mean": 0.16,
+   "std": 0.08,
+   "min": 0.0,
+   "max": 0.272,
+   "n": 20,
+   "missing": 0
+  },
+  "min_person_gap_m": {
+   "mean": 0.13,
+   "std": 0.41,
+   "min": -0.219,
+   "max": 0.928,
+   "n": 20,
+   "missing": 0
+  },
+  "distance_m": {
+   "mean": 52.47,
+   "std": 12.19,
+   "min": 43.5,
+   "max": 102.0,
+   "n": 20,
+   "missing": 0
+  },
+  "stops": {
+   "mean": 24.95,
+   "std": 7.46,
+   "min": 15,
+   "max": 45,
+   "n": 20,
+   "missing": 0
+  },
+  "runs": 20,
+  "runs_with_collision": 1,
+  "runs_with_person_contact": 11
+ },
+ "estimation": {
+  "odom": {
+   "pos_rmse_m": 0.618,
+   "pos_final_m": 0.987,
+   "yaw_rmse_deg": 12.347,
+   "yaw_final_deg": 17.569
+  },
+  "ekf": {
+   "pos_rmse_m": 0.352,
+   "pos_final_m": 0.634,
+   "yaw_rmse_deg": 6.47,
+   "yaw_final_deg": 11.088
+  },
+  "patch_visits_per_run": 0.8
+ },
+ "runs": [
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 12.4,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 4,
+   "min_clearance_m": 0.272,
+   "min_person_gap_m": -0.207,
+   "distance_m": 102.0,
+   "stops": 36,
+   "seed": 0,
+   "spawn": [
+    0.99,
+    -3.97,
+    1.621
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 10.8,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.213,
+   "min_person_gap_m": 0.408,
+   "distance_m": 47.2,
+   "stops": 24,
+   "seed": 1,
+   "spawn": [
+    -4.45,
+    3.99,
+    0.435
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 26.9,
+   "t25_s": 249.8,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 2,
+   "min_clearance_m": 0.213,
+   "min_person_gap_m": -0.144,
+   "distance_m": 50.9,
+   "stops": 20,
+   "seed": 2,
+   "spawn": [
+    -6.21,
+    -3.81,
+    -2.566
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 11.6,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 17,
+   "min_clearance_m": 0.02,
+   "min_person_gap_m": -0.213,
+   "distance_m": 47.0,
+   "stops": 45,
+   "seed": 3,
+   "spawn": [
+    -2.61,
+    -0.01,
+    0.582
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 22.2,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.213,
+   "min_person_gap_m": 0.822,
+   "distance_m": 50.9,
+   "stops": 16,
+   "seed": 4,
+   "spawn": [
+    -2.65,
+    -3.23,
+    -1.236
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 21.7,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 3,
+   "min_clearance_m": 0.06,
+   "min_person_gap_m": -0.197,
+   "distance_m": 46.5,
+   "stops": 28,
+   "seed": 5,
+   "spawn": [
+    5.57,
+    0.63,
+    -1.537
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 15.5,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.204,
+   "min_person_gap_m": 0.087,
+   "distance_m": 49.2,
+   "stops": 25,
+   "seed": 6,
+   "spawn": [
+    4.65,
+    3.67,
+    2.023
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 26.5,
+   "t25_s": 209.4,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 3,
+   "min_clearance_m": 0.06,
+   "min_person_gap_m": -0.213,
+   "distance_m": 46.4,
+   "stops": 25,
+   "seed": 7,
+   "spawn": [
+    -1.09,
+    -3.93,
+    2.814
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 23.2,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.241,
+   "min_person_gap_m": 0.834,
+   "distance_m": 51.4,
+   "stops": 18,
+   "seed": 8,
+   "spawn": [
+    -2.89,
+    -2.75,
+    -0.814
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 15.4,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 1,
+   "person_contacts": 6,
+   "min_clearance_m": 0.0,
+   "min_person_gap_m": -0.199,
+   "distance_m": 55.5,
+   "stops": 24,
+   "seed": 9,
+   "spawn": [
+    2.47,
+    -3.31,
+    0.711
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 13.3,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.197,
+   "min_person_gap_m": 0.192,
+   "distance_m": 46.2,
+   "stops": 24,
+   "seed": 10,
+   "spawn": [
+    4.61,
+    1.59,
+    -2.937
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 18.1,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 11,
+   "min_clearance_m": 0.1,
+   "min_person_gap_m": -0.211,
+   "distance_m": 48.4,
+   "stops": 34,
+   "seed": 11,
+   "spawn": [
+    2.13,
+    3.13,
+    2.298
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 18.5,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 8,
+   "min_clearance_m": 0.04,
+   "min_person_gap_m": -0.219,
+   "distance_m": 64.0,
+   "stops": 30,
+   "seed": 12,
+   "spawn": [
+    2.95,
+    0.37,
+    -1.451
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 21.6,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.2,
+   "min_person_gap_m": 0.928,
+   "distance_m": 49.9,
+   "stops": 19,
+   "seed": 13,
+   "spawn": [
+    -2.09,
+    -3.63,
+    -1.315
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 23.3,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.22,
+   "min_person_gap_m": 0.248,
+   "distance_m": 51.5,
+   "stops": 15,
+   "seed": 14,
+   "spawn": [
+    -5.09,
+    -3.91,
+    0.728
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 24.5,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 2,
+   "min_clearance_m": 0.197,
+   "min_person_gap_m": -0.218,
+   "distance_m": 54.7,
+   "stops": 17,
+   "seed": 15,
+   "spawn": [
+    -3.27,
+    -2.35,
+    -3.068
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 21.2,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 8,
+   "min_clearance_m": 0.06,
+   "min_person_gap_m": -0.205,
+   "distance_m": 43.5,
+   "stops": 34,
+   "seed": 16,
+   "spawn": [
+    0.33,
+    0.03,
+    -0.193
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 12.0,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.197,
+   "min_person_gap_m": 0.771,
+   "distance_m": 46.1,
+   "stops": 23,
+   "seed": 17,
+   "spawn": [
+    3.87,
+    4.87,
+    -0.539
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 10.6,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.22,
+   "min_person_gap_m": 0.348,
+   "distance_m": 46.1,
+   "stops": 22,
+   "seed": 18,
+   "spawn": [
+    -3.67,
+    3.95,
+    -2.37
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 23.1,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 1,
+   "min_clearance_m": 0.209,
+   "min_person_gap_m": -0.032,
+   "distance_m": 52.0,
+   "stops": 20,
+   "seed": 19,
+   "spawn": [
+    -6.45,
+    -2.53,
+    1.79
+   ]
+  }
+ ]
+}

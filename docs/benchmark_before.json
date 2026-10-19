@@ -1,0 +1,468 @@
+{
+ "backend": "sim2d",
+ "world": "house_world.sdf",
+ "runs_config": {
+  "runs": 20,
+  "duration_s": 300.0,
+  "first_seed": 0
+ },
+ "reachable_floor_m2": 97.0,
+ "aggregate": {
+  "duration_s": {
+   "mean": 299.8,
+   "std": 0.0,
+   "min": 299.8,
+   "max": 299.8,
+   "n": 20,
+   "missing": 0
+  },
+  "coverage_pct": {
+   "mean": 20.52,
+   "std": 5.7,
+   "min": 10.2,
+   "max": 29.2,
+   "n": 20,
+   "missing": 0
+  },
+  "t25_s": {
+   "mean": 260.93,
+   "std": 29.06,
+   "min": 210.0,
+   "max": 291.6,
+   "n": 6,
+   "missing": 14
+  },
+  "t50_s": {
+   "n": 0,
+   "missing": 20
+  },
+  "collisions": {
+   "mean": 0.05,
+   "std": 0.22,
+   "min": 0,
+   "max": 1,
+   "n": 20,
+   "missing": 0
+  },
+  "person_contacts": {
+   "mean": 3.9,
+   "std": 4.72,
+   "min": 0,
+   "max": 16,
+   "n": 20,
+   "missing": 0
+  },
+  "min_clearance_m": {
+   "mean": 0.21,
+   "std": 0.05,
+   "min": 0.0,
+   "max": 0.251,
+   "n": 20,
+   "missing": 0
+  },
+  "min_person_gap_m": {
+   "mean": 0.18,
+   "std": 0.45,
+   "min": -0.218,
+   "max": 1.04,
+   "n": 20,
+   "missing": 0
+  },
+  "distance_m": {
+   "mean": 46.38,
+   "std": 3.26,
+   "min": 40.8,
+   "max": 51.5,
+   "n": 20,
+   "missing": 0
+  },
+  "stops": {
+   "mean": 21.0,
+   "std": 3.92,
+   "min": 15,
+   "max": 31,
+   "n": 20,
+   "missing": 0
+  },
+  "runs": 20,
+  "runs_with_collision": 1,
+  "runs_with_person_contact": 11
+ },
+ "estimation": {
+  "odom": {
+   "pos_rmse_m": 0.633,
+   "pos_final_m": 0.823,
+   "yaw_rmse_deg": 10.094,
+   "yaw_final_deg": 11.77
+  },
+  "ekf": {
+   "pos_rmse_m": 0.352,
+   "pos_final_m": 0.603,
+   "yaw_rmse_deg": 6.385,
+   "yaw_final_deg": 11.009
+  },
+  "patch_visits_per_run": 0.3
+ },
+ "runs": [
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 15.2,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 2,
+   "min_clearance_m": 0.241,
+   "min_person_gap_m": -0.205,
+   "distance_m": 48.8,
+   "stops": 19,
+   "seed": 0,
+   "spawn": [
+    0.99,
+    -3.97,
+    1.621
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 11.0,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.213,
+   "min_person_gap_m": 0.526,
+   "distance_m": 45.1,
+   "stops": 22,
+   "seed": 1,
+   "spawn": [
+    -4.45,
+    3.99,
+    0.435
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 25.1,
+   "t25_s": 291.6,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 2,
+   "min_clearance_m": 0.251,
+   "min_person_gap_m": -0.125,
+   "distance_m": 50.2,
+   "stops": 18,
+   "seed": 2,
+   "spawn": [
+    -6.21,
+    -3.81,
+    -2.566
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 23.6,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 16,
+   "min_clearance_m": 0.24,
+   "min_person_gap_m": -0.214,
+   "distance_m": 43.3,
+   "stops": 23,
+   "seed": 3,
+   "spawn": [
+    -2.61,
+    -0.01,
+    0.582
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 22.2,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.213,
+   "min_person_gap_m": 0.822,
+   "distance_m": 50.9,
+   "stops": 16,
+   "seed": 4,
+   "spawn": [
+    -2.65,
+    -3.23,
+    -1.236
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 17.6,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 5,
+   "min_clearance_m": 0.24,
+   "min_person_gap_m": -0.209,
+   "distance_m": 46.1,
+   "stops": 21,
+   "seed": 5,
+   "spawn": [
+    5.57,
+    0.63,
+    -1.537
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 12.0,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.204,
+   "min_person_gap_m": 0.612,
+   "distance_m": 45.5,
+   "stops": 22,
+   "seed": 6,
+   "spawn": [
+    4.65,
+    3.67,
+    2.023
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 26.4,
+   "t25_s": 288.6,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 12,
+   "min_clearance_m": 0.189,
+   "min_person_gap_m": -0.218,
+   "distance_m": 40.8,
+   "stops": 31,
+   "seed": 7,
+   "spawn": [
+    -1.09,
+    -3.93,
+    2.814
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 22.3,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.24,
+   "min_person_gap_m": 1.04,
+   "distance_m": 49.7,
+   "stops": 18,
+   "seed": 8,
+   "spawn": [
+    -2.89,
+    -2.75,
+    -0.814
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 17.2,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 1,
+   "person_contacts": 4,
+   "min_clearance_m": 0.0,
+   "min_person_gap_m": -0.212,
+   "distance_m": 47.0,
+   "stops": 19,
+   "seed": 9,
+   "spawn": [
+    2.47,
+    -3.31,
+    0.711
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 26.5,
+   "t25_s": 247.0,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 6,
+   "min_clearance_m": 0.22,
+   "min_person_gap_m": -0.217,
+   "distance_m": 46.8,
+   "stops": 22,
+   "seed": 10,
+   "spawn": [
+    4.61,
+    1.59,
+    -2.937
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 29.2,
+   "t25_s": 210.0,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 8,
+   "min_clearance_m": 0.233,
+   "min_person_gap_m": -0.196,
+   "distance_m": 44.4,
+   "stops": 23,
+   "seed": 11,
+   "spawn": [
+    2.13,
+    3.13,
+    2.298
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 20.4,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 4,
+   "min_clearance_m": 0.198,
+   "min_person_gap_m": -0.207,
+   "distance_m": 41.1,
+   "stops": 22,
+   "seed": 12,
+   "spawn": [
+    2.95,
+    0.37,
+    -1.451
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 21.8,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.2,
+   "min_person_gap_m": 0.75,
+   "distance_m": 50.0,
+   "stops": 17,
+   "seed": 13,
+   "spawn": [
+    -2.09,
+    -3.63,
+    -1.315
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 23.3,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.22,
+   "min_person_gap_m": 0.248,
+   "distance_m": 51.5,
+   "stops": 15,
+   "seed": 14,
+   "spawn": [
+    -5.09,
+    -3.91,
+    0.728
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 25.1,
+   "t25_s": 247.60000000000002,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 8,
+   "min_clearance_m": 0.197,
+   "min_person_gap_m": -0.218,
+   "distance_m": 42.4,
+   "stops": 27,
+   "seed": 15,
+   "spawn": [
+    -3.27,
+    -2.35,
+    -3.068
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 27.5,
+   "t25_s": 280.8,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 11,
+   "min_clearance_m": 0.233,
+   "min_person_gap_m": -0.217,
+   "distance_m": 42.6,
+   "stops": 27,
+   "seed": 16,
+   "spawn": [
+    0.33,
+    0.03,
+    -0.193
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 12.2,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.22,
+   "min_person_gap_m": 0.792,
+   "distance_m": 45.4,
+   "stops": 22,
+   "seed": 17,
+   "spawn": [
+    3.87,
+    4.87,
+    -0.539
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 10.2,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.22,
+   "min_person_gap_m": 0.703,
+   "distance_m": 45.8,
+   "stops": 19,
+   "seed": 18,
+   "spawn": [
+    -3.67,
+    3.95,
+    -2.37
+   ]
+  },
+  {
+   "duration_s": 299.8,
+   "coverage_pct": 21.6,
+   "t25_s": null,
+   "t50_s": null,
+   "collisions": 0,
+   "person_contacts": 0,
+   "min_clearance_m": 0.224,
+   "min_person_gap_m": 0.292,
+   "distance_m": 50.2,
+   "stops": 17,
+   "seed": 19,
+   "spawn": [
+    -6.45,
+    -2.53,
+    1.79
+   ]
+  }
+ ]
+}

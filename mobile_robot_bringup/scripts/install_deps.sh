@@ -9,5 +9,6 @@ sudo apt-get install -y \
   ros-jazzy-ros-gz ros-jazzy-gz-ros2-control ros-jazzy-ros2-control ros-jazzy-ros2-controllers \
   ros-jazzy-xacro ros-jazzy-robot-state-publisher ros-jazzy-rviz2 ros-jazzy-teleop-twist-keyboard \
   ros-jazzy-slam-toolbox ros-jazzy-navigation2 ros-jazzy-nav2-bringup ros-jazzy-nav2-map-server \
-  ros-jazzy-v4l2-camera python3-numpy python3-yaml python3-pytest python3-colcon-common-extensions
+  ros-jazzy-v4l2-camera ros-jazzy-robot-localization ros-jazzy-rosbag2 ros-jazzy-rosbag2-compression-zstd ros-jazzy-rosbag2-storage-default-plugins \
+  python3-scipy python3-matplotlib g++ python3-numpy python3-yaml python3-pytest python3-colcon-common-extensions
 echo "Done. Next:  cd ~/dev_ws && colcon build --symlink-install && source install/setup.bash"

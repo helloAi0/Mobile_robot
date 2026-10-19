@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
-      - run: pip install pytest pyyaml numpy xacro mujoco trimesh pycollada
+      - run: pip install pytest pyyaml numpy scipy matplotlib xacro mujoco trimesh pycollada
       - name: Fetch the official SDF schema (used to lint worlds and models)
         run: |
           git clone --depth 1 --filter=blob:none --sparse https://github.com/gazebosim/sdformat /tmp/sdformat
@@ -21,6 +21,12 @@ jobs:
           SDFORMAT_SDF_DIR: /tmp/sdformat/sdf/1.9
       - name: Independent physics check (MuJoCo)
         run: python mobile_robot_description/tools/physics_check.py
+      - name: Benchmark smoke test (3 runs, 60 s: the pipeline works, the numbers are not the README's)
+        run: python mobile_robot_bringup/tools/benchmark.py --backend sim2d --runs 3 --duration 60 --out /tmp/bench_smoke.json
+      - name: C++ mux core vs the Python mux (golden vectors) and latency
+        run: |
+          python -m pytest -q mobile_robot_bringup/test/test_mux_cpp.py
+          python mobile_robot_bringup/tools/mux_latency.py --iterations 5000
 
   ros-build:
     name: ROS 2 Jazzy build + launch files + integration (mock hardware)
@@ -36,6 +42,7 @@ jobs:
             ros-jazzy-ros-gz ros-jazzy-gz-ros2-control ros-jazzy-ros2-control ros-jazzy-ros2-controllers \
             ros-jazzy-xacro ros-jazzy-robot-state-publisher ros-jazzy-rviz2 ros-jazzy-slam-toolbox \
             ros-jazzy-navigation2 ros-jazzy-nav2-bringup ros-jazzy-ros2controlcli \
+            ros-jazzy-robot-localization ros-jazzy-rosbag2 ros-jazzy-rosbag2-compression-zstd python3-scipy \
             python3-pytest python3-numpy python3-yaml python3-colcon-common-extensions
       - name: Build
         working-directory: ws
@@ -48,6 +55,8 @@ jobs:
         run: |
           . /opt/ros/jazzy/setup.sh && . install/setup.sh
           for f in launch_sim autonomy hardware; do ros2 launch mobile_robot_bringup $f.launch.py --show-args > /dev/null; done
+          ros2 launch mobile_robot_bringup replay.launch.py --show-args > /dev/null
+          ls install/mobile_robot_bringup/lib/mobile_robot_bringup/cmd_vel_mux_node     # the C++ mux was built
       - name: Gazebo validates the robot and the worlds (URDF to SDF conversion, schema, physics parameters)
         working-directory: ws
         continue-on-error: true      # the walking people use remote Fuel meshes; remove this line once it has run green

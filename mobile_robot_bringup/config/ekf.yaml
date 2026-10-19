@@ -1,0 +1,88 @@
+# robot_localization EKF: wheel odometry + IMU gyroscope -> /odometry/filtered and TF odom -> base_link.
+#
+#   ros2 launch mobile_robot_bringup launch_sim.launch.py ekf:=true
+#
+# What is fused and why (planar robot, so two_d_mode: z, roll, pitch and their rates are ignored):
+#   diff_cont /diff_cont/odom   forward speed vx and yaw rate vyaw. Not x, y, yaw: the wheel odometry integrates
+#                               slip errors into the pose, so only its *velocities* are used and the filter integrates.
+#   imu       /imu/data         yaw rate only (gyro). The simulated IMU has no magnetometer, so absolute yaw is not used,
+#                               and linear acceleration is not fused: its bias (0.02 m/s^2) integrates to a runaway speed.
+# On the wet tile the wheels turn but the body does not follow: wheel yaw rate is wrong, the gyro measures the real
+# rotation. The gyro variance (4e-6, imu_covariance.py) is 600x smaller than the wheel yaw-rate variance
+# (2.5e-3, my_controllers.yaml), so heading follows the gyro; forward speed still comes from the wheels
+# (slip in the forward direction is NOT corrected by this filter: that is what slam_toolbox's map->odom correction is for).
+#
+# Frames: the EKF publishes odom -> base_link, so the controller must NOT: launch_sim / hardware.launch set
+# enable_odom_tf: false for diff_cont when ekf:=true (config/diff_cont_no_tf.yaml). The mux then copies
+# /odometry/filtered to /odom for Nav2 and SLAM (parameter odom_in of cmd_vel_mux).
+ekf_filter_node:
+  ros__parameters:
+    frequency: 50.0
+    sensor_timeout: 0.2
+    two_d_mode: true
+    publish_tf: true
+    publish_acceleration: false
+    permit_corrected_publication: false
+    print_diagnostics: true
+    debug: false
+
+    map_frame: map
+    odom_frame: odom
+    base_link_frame: base_link
+    world_frame: odom
+
+    # order of every *_config vector: x y z | roll pitch yaw | vx vy vz | vroll vpitch vyaw | ax ay az
+    odom0: /diff_cont/odom
+    odom0_config: [false, false, false,
+                   false, false, false,
+                   true,  false, false,
+                   false, false, true,
+                   false, false, false]
+    odom0_queue_size: 10
+    odom0_differential: false
+    odom0_relative: false
+
+    imu0: /imu/data
+    imu0_config: [false, false, false,
+                  false, false, false,
+                  false, false, false,
+                  false, false, true,
+                  false, false, false]
+    imu0_queue_size: 20
+    imu0_differential: false
+    imu0_relative: false
+    imu0_remove_gravitational_acceleration: true
+
+    # process noise: variance added per second to [x y z roll pitch yaw vx vy vz vroll vpitch vyaw ax ay az]
+    process_noise_covariance: [
+      0.05, 0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+      0,    0.05, 0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+      0,    0,    1.0e-6, 0,  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+      0,    0,    0,    1.0e-6, 0,  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+      0,    0,    0,    0,    1.0e-6, 0,  0,    0,    0,    0,    0,    0,    0,    0,    0,
+      0,    0,    0,    0,    0,    0.03, 0,    0,    0,    0,    0,    0,    0,    0,    0,
+      0,    0,    0,    0,    0,    0,    0.05, 0,    0,    0,    0,    0,    0,    0,    0,
+      0,    0,    0,    0,    0,    0,    0,    1.0e-6, 0,  0,    0,    0,    0,    0,    0,
+      0,    0,    0,    0,    0,    0,    0,    0,    1.0e-6, 0,  0,    0,    0,    0,    0,
+      0,    0,    0,    0,    0,    0,    0,    0,    0,    1.0e-6, 0,  0,    0,    0,    0,
+      0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    1.0e-6, 0,  0,    0,    0,
+      0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0.02, 0,    0,    0,
+      0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    1.0e-6, 0,  0,
+      0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    1.0e-6, 0,
+      0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    1.0e-6]
+    initial_estimate_covariance: [
+      1.0e-4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 1.0e-4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 1.0e-6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 1.0e-6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 1.0e-6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 1.0e-4, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 1.0e-3, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 1.0e-6, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 1.0e-6, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0e-6, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0e-6, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0e-3, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0e-6, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0e-6, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0e-6]

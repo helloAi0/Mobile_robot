@@ -1,0 +1,5 @@
+# Applied to diff_cont when the EKF owns the odom -> base_link transform (launch argument ekf:=true).
+# Two nodes publishing the same transform makes TF jump between them.
+diff_cont:
+  ros__parameters:
+    enable_odom_tf: false

@@ -1,5 +1,7 @@
 # mobile_robot: one software stack for simulation and hardware
 
+**v1.1**: measured benchmark, sensor fusion, tuned Nav2 patrol, record / replay, C++ mux with latency numbers. See [CHANGELOG.md](CHANGELOG.md).
+
 [![CI](https://github.com/helloAi0/Mobile_robot/actions/workflows/ci.yml/badge.svg)](https://github.com/helloAi0/Mobile_robot/actions/workflows/ci.yml)
 ![ROS 2 Jazzy](https://img.shields.io/badge/ROS%202-Jazzy-22314E)
 ![Gazebo Harmonic](https://img.shields.io/badge/Gazebo-Harmonic-F58113)
@@ -20,7 +22,12 @@ obstacle-avoiding mode that stops for walking people, and a safety layer between
 | **Autonomy** | `auto:=true`: explores, stops for obstacles and people, turns, continues, backs out when stuck |
 | **Safety** | `cmd_vel_mux`: e-stop, front/rear obstacle guard, no lidar = no motion, speed and acceleration limits, command watchdogs |
 | **Hardware path** | `hardware.launch.py` (mock or real motor driver), systemd + udev files, Dockerfile |
-| **Quality** | 116 tests (safety logic, autopilot, filters, robot description in sim/mock/real, an independent MuJoCo physics check, SDF schema lint), CI, integration test on mock hardware |
+| **Measured** | [Benchmark](docs/BENCHMARK.md): 20 autonomous runs, coverage / collisions / clearance / time, with the weaknesses it found |
+| **State estimation** | [EKF](docs/LOCALIZATION.md): wheel odometry + IMU gyro; heading error on the wet tile 12.6° → 1.0° |
+| **Navigation** | [Nav2 tuned](docs/NAVIGATION.md) to this robot's footprint, speeds and doorways, plus a nine-waypoint patrol of all rooms |
+| **Debugging** | [Record and replay](docs/RECORD_REPLAY.md): rosbag with a replay layout (red = wheels, green = fused), offline scoring |
+| **Performance** | [C++ mux](docs/PERFORMANCE.md), proven identical to the Python one on 4,800 random cases; 0.63 µs vs 272 µs per scan |
+| **Quality** | 229 tests (safety logic, autopilot, filters, robot description in sim/mock/real, an independent MuJoCo physics check, SDF schema lint), CI, integration test on mock hardware |
 
 ## Quick start
 
@@ -62,12 +69,43 @@ ros2 run rviz2 rviz2 -d $(ros2 pkg prefix mobile_robot_bringup)/share/mobile_rob
 ```bash
 ros2 launch mobile_robot_bringup launch_sim.launch.py auto:=true     # the robot explores by itself
 ros2 launch mobile_robot_bringup launch_sim.launch.py nav2:=true     # RViz "2D Goal Pose"
+ros2 launch mobile_robot_bringup launch_sim.launch.py nav2:=true patrol:=true   # patrols all rooms
+ros2 launch mobile_robot_bringup launch_sim.launch.py ekf:=true      # wheel odometry + IMU fused
+ros2 launch mobile_robot_bringup launch_sim.launch.py mux:=cpp       # C++ command mux
+ros2 launch mobile_robot_bringup launch_sim.launch.py record:=true   # rosbag -> ./bags, then replay.launch.py bag:=...
 ros2 launch mobile_robot_bringup launch_sim.launch.py world:=street_world.sdf
 ros2 run mobile_robot_bringup selftest.py                            # drives ~1 m by itself, every line must say PASS
 ros2 run mobile_robot_bringup estop.sh                               # emergency stop   (estop.sh release = go on)
 ```
 
 Every command with all options: **[docs/COMMANDS.md](docs/COMMANDS.md)**. Presentation script: **[docs/DEMO.md](docs/DEMO.md)**.
+
+## Benchmark: how well does it explore, and how safe is it?
+
+The control code of this repository (autopilot, safety layer, lidar degradation) running in a 2D model of the house read from the Gazebo world file. Method, definitions and what each backend does and does not prove: [docs/BENCHMARK.md](docs/BENCHMARK.md). **Honest reading:** the robot almost never touches walls or furniture, but people walking head-on are hard for a 0.6 m/s robot, and a reactive wanderer covers only about a fifth of the floor in 5 minutes. The Gazebo backend exists but has not been run yet.
+
+<!-- benchmark:start -->
+Measured with `tools/benchmark.py --backend sim2d`: 20 runs of 300 simulated seconds, random start and heading (seeds 0..19), 4 walking people, wet tile in the corridor. Reachable floor: 97 m².
+
+| Metric                                                  | Result |
+|---------------------------------------------------------|--------|
+| Runs                                                    | 20 |
+| Coverage of reachable floor                             | 18.6 ± 5.3 % |
+| Time to 25 % coverage                                   | 230 ± 20 s (2/20 runs) |
+| Time to 50 % coverage                                   | not reached |
+| Collisions with walls / furniture per run               | 0.05 ± 0.22 |
+| Runs with at least one such collision                   | 1 of 20 |
+| Minimum clearance to walls / furniture (worst run)      | 0.00 m |
+| Minimum clearance to walls / furniture (mean over runs) | 0.16 ± 0.08 m |
+| Contacts with walking people per run                    | 3.25 ± 4.50 |
+| Runs with at least one person contact                   | 11 of 20 |
+| Closest approach to a person (worst run)                | -0.22 m |
+| Distance driven                                         | 52 ± 12 m |
+| Stops in front of obstacles                             | 25 ± 7 |
+| Run length                                              | 300 ± 0 s |
+
+![benchmark](docs/figures/benchmark.png)
+<!-- benchmark:end -->
 
 ## Architecture
 
@@ -114,7 +152,7 @@ Written in this repository:
 | safety layer logic (e-stop, obstacle guard, fail-safe, limits) | unit tests | `mobile_robot_bringup/test/test_mux_safety.py` |
 | the whole running system | `selftest.py` drives the robot through the real command path and reports PASS/FAIL per subsystem | [docs/DEMO.md](docs/DEMO.md) |
 
-**Scope, stated plainly:** validated in simulation and by unit tests; **not yet validated on physical hardware**. The physics check uses a
+**Scope, stated plainly:** validated in simulation and by unit tests; **not yet validated on physical hardware**. New in 1.1 and **not yet run in live Gazebo/ROS**: the EKF node, the Nav2 patrol, the C++ node, bag record / replay (their configuration, logic and models are tested; the numbers in the README come from the 2D model and a planar EKF model). The physics check uses a
 different engine from Gazebo, so it proves the robot description (axes, mass, spring, motors, geometry), not every contact detail of Gazebo.
 Run the tests yourself: `make test` (plain Python, no ROS needed).
 

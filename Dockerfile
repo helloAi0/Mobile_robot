@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ros-jazzy-ros-gz ros-jazzy-gz-ros2-control ros-jazzy-ros2-control ros-jazzy-ros2-controllers \
       ros-jazzy-xacro ros-jazzy-robot-state-publisher ros-jazzy-rviz2 ros-jazzy-teleop-twist-keyboard \
       ros-jazzy-slam-toolbox ros-jazzy-navigation2 ros-jazzy-nav2-bringup ros-jazzy-nav2-map-server \
-      python3-numpy python3-yaml python3-pytest python3-colcon-common-extensions \
+      ros-jazzy-robot-localization ros-jazzy-rosbag2 ros-jazzy-rosbag2-compression-zstd python3-scipy python3-numpy python3-yaml python3-pytest python3-colcon-common-extensions \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /ws
 COPY . src/mobile_robot

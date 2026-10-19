@@ -1,0 +1,29 @@
+# What gets recorded (scripts/record_bag.sh, launch argument record:=true) and what replay needs.
+# Chosen so that a bag is enough to (a) replay the run in RViz exactly as it happened, (b) recompute the benchmark
+# numbers offline (scripts/bag_report.py), (c) debug the estimator: raw wheel odometry vs fused vs map-corrected pose.
+core:                          # always recorded, a few MB per minute
+  - /clock
+  - /tf
+  - /tf_static
+  - /robot_description
+  - /scan                      # lidar, 10 Hz
+  - /imu/data                  # gyro with covariance (ekf:=true), else /imu
+  - /imu
+  - /diff_cont/odom            # raw wheel odometry
+  - /odometry/filtered         # EKF output (only with ekf:=true)
+  - /odom                      # what Nav2 and SLAM used
+  - /diff_cont/cmd_vel         # what the wheels were told
+  - /cmd_vel_teleop
+  - /cmd_vel_nav
+  - /cmd_vel_smoothed
+  - /cmd_vel_auto
+  - /mux_status                # who drives, why limited
+  - /emergency_stop
+  - /map
+  - /plan
+  - /goal_pose
+  - /detections
+camera:                        # opt in (record_camera:=true): about 30 MB per minute
+  - /camera/image_raw
+  - /camera/depth/image_raw
+  - /camera/camera_info

@@ -43,6 +43,8 @@ def _setup(context):
         cfg = yaml.safe_load(f)
     for section in cfg.values():
         section['ros__parameters']['use_sim_time'] = False
+    if lc('ekf').lower() == 'true':
+        cfg['diff_cont']['ros__parameters']['enable_odom_tf'] = False      # the EKF publishes odom -> base_link
     ctrl_file = os.path.join(tempfile.mkdtemp(prefix='mobile_robot_'), 'controllers.yaml')
     with open(ctrl_file, 'w') as f:
         yaml.safe_dump(cfg, f)
@@ -59,7 +61,8 @@ def _setup(context):
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(pkg, 'launch', 'autonomy.launch.py')),
             launch_arguments={'use_sim_time': 'false', 'slam': lc('slam'), 'nav2': lc('nav2'), 'auto': lc('auto'),
-                              'require_scan': 'false' if mode == 'mock' else 'true'}.items()),
+                              'require_scan': 'false' if mode == 'mock' else 'true',
+                              'ekf': lc('ekf'), 'mux': lc('mux')}.items()),
         Node(package='rviz2', executable='rviz2', output='log', arguments=['-d', os.path.join(pkg, 'rviz', 'camera.rviz')],
              condition=IfCondition(LaunchConfiguration('rviz'))),
     ]
@@ -80,5 +83,7 @@ def generate_launch_description():
         DeclareLaunchArgument('nav2', default_value='false'),
         DeclareLaunchArgument('auto', default_value='false'),
         DeclareLaunchArgument('rviz', default_value='true'),
+        DeclareLaunchArgument('ekf', default_value='false', description='fuse wheel odometry + IMU (needs an /imu driver)'),
+        DeclareLaunchArgument('mux', default_value='python', description='python | cpp'),
         OpaqueFunction(function=_setup),
     ])

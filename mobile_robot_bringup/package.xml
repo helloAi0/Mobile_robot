@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>mobile_robot_bringup</name>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <description>Bring-up and runtime for the differential-drive robot: controllers, command mux with safety layer, SLAM, Nav2, autopilot, point-cloud tools, hardware/mock launch, metrics (ROS 2 Jazzy).</description>
   <maintainer email="tahaudaipurwala68@gmail.com">Taha Udaipurwala</maintainer>
   <license>Apache-2.0</license>

@@ -1,0 +1,16 @@
+# Latched topics must be recorded as transient_local, otherwise the bag has no map / robot model for the replay.
+/tf_static:
+  depth: 1
+  durability: transient_local
+  history: keep_last
+  reliability: reliable
+/robot_description:
+  depth: 1
+  durability: transient_local
+  history: keep_last
+  reliability: reliable
+/map:
+  depth: 1
+  durability: transient_local
+  history: keep_last
+  reliability: reliable

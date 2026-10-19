@@ -8,7 +8,7 @@ from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import AppendEnvironmentVariable, DeclareLaunchArgument, IncludeLaunchDescription
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, PythonExpression, TextSubstitution
 from launch_ros.actions import Node
@@ -24,6 +24,9 @@ def generate_launch_description():
         DeclareLaunchArgument('gui', default_value='true', description='false = no Gazebo window'),
         DeclareLaunchArgument('x', default_value='0.0', description='spawn x'),
         DeclareLaunchArgument('y', default_value='0.0', description='spawn y'),
+        DeclareLaunchArgument('yaw', default_value='0.0', description='spawn heading, rad'),
+        DeclareLaunchArgument('odom_tf', default_value='true',
+                              description='false = the controller does not publish odom->base_link (an EKF does: launch_sim ekf:=true)'),
         DeclareLaunchArgument('degrade', default_value='true',
                               description='lidar dropouts + range-bias drift (the pillar mask is always on)'),
     ]
@@ -71,12 +74,17 @@ def generate_launch_description():
     spawn = Node(
         package='ros_gz_sim', executable='create', output='screen',
         arguments=['-topic', 'robot_description', '-name', 'my_bot', '-z', '0.08',
-                   '-x', LaunchConfiguration('x'), '-y', LaunchConfiguration('y')])
+                   '-x', LaunchConfiguration('x'), '-y', LaunchConfiguration('y'), '-Y', LaunchConfiguration('yaw')])
 
     # the controller_manager only exists after Gazebo has loaded the robot: give the spawners time
     diff_drive = Node(package='controller_manager', executable='spawner', output='screen',
-                      arguments=['diff_cont', '--controller-manager-timeout', '120'])
+                      arguments=['diff_cont', '--controller-manager-timeout', '120'],
+                      condition=IfCondition(LaunchConfiguration('odom_tf')))
+    diff_drive_no_tf = Node(package='controller_manager', executable='spawner', output='screen',
+                            arguments=['diff_cont', '--controller-manager-timeout', '120',
+                                       '--param-file', os.path.join(gz_share, 'config', 'diff_cont_no_tf.yaml')],
+                            condition=UnlessCondition(LaunchConfiguration('odom_tf')))
     joint_broad = Node(package='controller_manager', executable='spawner', output='screen',
                        arguments=['joint_broad', '--controller-manager-timeout', '120'])
 
-    return LaunchDescription(args + [resources, models, rsp, gazebo, bridge, scan_degrader, spawn, diff_drive, joint_broad])
+    return LaunchDescription(args + [resources, models, rsp, gazebo, bridge, scan_degrader, spawn, diff_drive, diff_drive_no_tf, joint_broad])
