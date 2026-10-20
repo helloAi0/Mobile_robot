@@ -2,7 +2,7 @@
 # The map origin is where the robot starts (0, 0, facing +x), which is also the world origin of the SDF, so these are
 # world coordinates. Every waypoint is checked against the world's geometry by tests/test_patrol.py
 # (free space, reachable, at least the robot radius + margin from any wall; distances between consecutive points).
-# Keep waypoints in the middle of rooms and in doorways' straight lines: the hinged doors are modelled as open.
+# Keep waypoints in the middle of rooms and in doorways' straight lines: the doorways are open.
 patrol:
   loops: 0                 # 0 = forever, N = stop after N laps
   retries: 2               # tries per waypoint before it is skipped

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+- House world: the three hinged doors are removed, the doorways are open (the 2D benchmark model already treated them as open, so its numbers do not change). `HINGED_DOORS = True` in the generator puts them back.
+- New front-page README with slots for the demo GIF and two screenshots (`docs/media/`, how to record in `docs/media/README.md`).
+
 ## 1.1.1
 Fixes from the first run on a real Jazzy / Gazebo Harmonic install:
 - `ekf:=true` crashed: `ekf.yaml` mixed integers into lists of doubles, which the ROS parameter parser rejects. All lists are floats now; a test checks every config file.

@@ -66,5 +66,5 @@ them with damping and friction into the DART joint. So the suspension in the sim
 
 ## Not verified here
 This was built and unit-tested without a Gazebo or ROS runtime. The suspension, caster behaviour, door hinges, friction values and
-the SDF physics settings must be checked on your machine: drive over the ramp and the wet patch, push a door, and compare
+the SDF physics settings must be checked on your machine: drive over the ramp and the wet patch, and compare
 `/imu` and `/diff_cont/odom` against the commanded motion.
