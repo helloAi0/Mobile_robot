@@ -62,11 +62,27 @@ def _setup(context):
 
     if LaunchConfiguration('nav2').perform(context).lower() == 'true':
         try:
-            nav_share = get_package_share_directory('nav2_bringup')
-            actions.append(IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(os.path.join(nav_share, 'launch', 'navigation_launch.py')),
-                launch_arguments={'use_sim_time': str(sim).lower(), 'autostart': 'true',
-                                  'params_file': os.path.join(pkg, 'config', 'nav2_params.yaml')}.items()))
+            get_package_share_directory('nav2_bringup')
+            # Our own node list instead of nav2_bringup's navigation_launch.py: that file also starts whatever the installed
+            # Nav2 release adds (collision_monitor, route_server, docking), and those fail without their own parameters.
+            # Command chain: controller / behaviors -> /cmd_vel_nav -> velocity_smoother -> /cmd_vel_smoothed -> cmd_vel_mux.
+            nav_params = os.path.join(pkg, 'config', 'nav2_params.yaml')
+            nav_common = dict(output='screen', parameters=[nav_params, {'use_sim_time': sim}])
+            nav_remap = [('cmd_vel', 'cmd_vel_nav')]
+            for pkg_name, exe, remap in (('nav2_controller', 'controller_server', nav_remap),
+                                         ('nav2_smoother', 'smoother_server', []),
+                                         ('nav2_planner', 'planner_server', []),
+                                         ('nav2_behaviors', 'behavior_server', nav_remap),
+                                         ('nav2_bt_navigator', 'bt_navigator', []),
+                                         ('nav2_waypoint_follower', 'waypoint_follower', []),
+                                         ('nav2_velocity_smoother', 'velocity_smoother', nav_remap)):
+                actions.append(Node(package=pkg_name, executable=exe, name=exe, remappings=remap, **nav_common))
+            actions.append(Node(package='nav2_lifecycle_manager', executable='lifecycle_manager',
+                                name='lifecycle_manager_navigation', output='screen',
+                                parameters=[{'use_sim_time': sim, 'autostart': True, 'bond_timeout': 10.0,
+                                             'node_names': ['controller_server', 'smoother_server', 'planner_server',
+                                                            'behavior_server', 'bt_navigator', 'waypoint_follower',
+                                                            'velocity_smoother']}]))
         except PackageNotFoundError:
             actions.append(LogInfo(msg='Nav2 is not installed -> no goal navigation. Install: '
                                        'sudo apt install ros-jazzy-navigation2 ros-jazzy-nav2-bringup'))

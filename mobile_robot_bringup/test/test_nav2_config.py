@@ -109,9 +109,20 @@ def test_costmap_sensor_ranges_match_the_lidar():
 
 def test_launch_passes_the_tuned_params_to_nav2():
     a = open(os.path.join(ROOT, 'launch', 'autonomy.launch.py')).read()
-    assert "'params_file'" in a and 'nav2_params.yaml' in a and 'patrol.py' in a
+    assert 'nav2_params.yaml' in a and 'patrol.py' in a
 
 
 def test_global_planner_can_plan_through_the_unexplored_map():
     p = N2['planner_server']['ros__parameters']['GridBased']
     assert p['allow_unknown'] is True and p['use_astar'] is True and p['tolerance'] > 0
+
+
+def test_nav2_nodes_are_started_one_by_one_not_with_navigation_launch():
+    """navigation_launch.py of newer Nav2 releases also starts collision_monitor / route_server / docking, which need their
+    own parameters and abort the whole bring-up when missing (seen on a real Jazzy install)."""
+    a = open(os.path.join(ROOT, 'launch', 'autonomy.launch.py')).read()
+    code = [l for l in a.splitlines() if not l.strip().startswith('#')]
+    assert not any("'navigation_launch.py'" in l for l in code)
+    for exe in ('controller_server', 'planner_server', 'bt_navigator', 'velocity_smoother', 'lifecycle_manager'):
+        assert exe in a
+    assert 'collision_monitor' not in a.split('node_names')[1]

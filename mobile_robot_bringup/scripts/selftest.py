@@ -33,9 +33,9 @@ def diagnose(topics_alive, mux_status, moved_m, turned_rad, expect_m, expect_rad
     fwd_ok = moved_m >= 0.4 * expect_m
     if fwd_ok:
         out.append((True, f'drive forward: moved {moved_m:.2f} m (commanded about {expect_m:.2f} m)'))
-    elif mux_status and ('front' in mux_status.lower() or 'stop' in mux_status.lower() or 'scan' in mux_status.lower()):
+    elif mux_status and any(w in mux_status.lower() for w in ('front', 'stop', 'scan', 'obstacle', 'slowing')):
         out.append((False, f'drive forward: moved only {moved_m:.2f} m, the SAFETY layer blocked it ({mux_status}). '
-                           'Something is in front of the robot or /scan is missing: back away (key m) or check the lidar.'))
+                           'Something is in front of the robot (or /scan is missing): drive away with key m, turn, run this again.'))
     else:
         out.append((False, f'drive forward: moved only {moved_m:.2f} m although the mux accepted the command. '
                            'The wheels do not turn: check  ros2 control list_controllers  (diff_cont must be "active") '
@@ -65,8 +65,13 @@ def main():
             self.create_subscription(Imu, '/imu', lambda m: self.bump('IMU (/imu)'), be)
             self.create_subscription(Image, '/camera/image_raw', lambda m: self.bump('camera (/camera/image_raw)'), be)
             self.create_subscription(Odometry, '/diff_cont/odom', self.on_odom, QoSProfile(reliability=ReliabilityPolicy.BEST_EFFORT, depth=5))
-            self.create_subscription(String, '/mux_status', lambda m: setattr(self, 'status', m.data), 10)
+            self.seen = set()          # every mux status text seen while a command was being sent
+            self.create_subscription(String, '/mux_status', self.on_status, 10)
             self.pub = self.create_publisher(Twist, '/cmd_vel_teleop', 10)
+
+        def on_status(self, m):
+            self.status = m.data
+            self.seen.add(m.data)
 
         def bump(self, k):
             self.count[k] += 1
@@ -98,11 +103,15 @@ def main():
             print(('PASS  ' if ok else 'FAIL  ') + msg)
         print('\nNo odometry: is  ros2 launch mobile_robot_bringup launch_sim.launch.py  running and fully started?')
         return 1
+    # make room first: the safety layer slows the robot inside 1 m of an obstacle, and backing away is always allowed
+    n.spin_for(3.0, lin=-0.2)
+    n.spin_for(0.8, lin=0.0)
+    n.seen.clear()
     p0 = n.pose
     n.spin_for(3.0, lin=0.2)                       # 0.6 m at 0.2 m/s
     p1 = n.pose
+    mux_during = ' | '.join(sorted(n.seen)) or n.status
     n.spin_for(0.8, lin=0.0)
-    mux_during = n.status
     n.spin_for(2.0, lin=0.0, ang=0.6)              # 1.2 rad
     p2 = n.pose
     n.spin_for(1.5, lin=-0.2)                      # back up
